@@ -13,6 +13,13 @@ REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || {
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 STATE_FILE="$REPO_ROOT/.git/git-auto-state.json"
 
+# Guard: git-auto must be installed
+if ! command -v git-auto &>/dev/null; then
+  echo "[minimal-git-workflow] git-auto not found on PATH." >&2
+  echo "[minimal-git-workflow] Run install.sh from the plugin repo to install it." >&2
+  exit 1
+fi
+
 # Check if already running FOR THIS PROJECT specifically
 if [ -f "$STATE_FILE" ]; then
   PID=$(python3 -c "
