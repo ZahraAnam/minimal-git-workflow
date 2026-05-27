@@ -1,0 +1,2263 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "threshold_commit_flow",
+        "label": "Threshold-Based Commit Flow (Pathway A)",
+        "nodes": [
+          "git_auto_tool",
+          "pending_commit_json",
+          "watch_pending_sh",
+          "skills_skill_commit",
+          "handshake_py",
+          "commit_message_txt"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "CLAUDE.md"
+      },
+      {
+        "id": "unit_commit_flow",
+        "label": "Logical-Unit Commit Flow (Pathway B)",
+        "nodes": [
+          "check_unit_complete_sh",
+          "unit_check_json",
+          "watch_pending_sh",
+          "skills_skill_unit_commit",
+          "handshake_py"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "CLAUDE.md"
+      },
+      {
+        "id": "skill_command_pair_pattern",
+        "label": "Skill-Command Pair Pattern",
+        "nodes": [
+          "skills_skill_commit",
+          "commands_commit",
+          "skills_skill_unit_commit",
+          "commands_unit_commit",
+          "skills_skill_configure",
+          "commands_configure"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "README.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "install.sh",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L1",
+      "id": "install_sh",
+      "community": 14,
+      "norm_label": "install.sh"
+    },
+    {
+      "label": "uninstall.sh",
+      "file_type": "code",
+      "source_file": "uninstall.sh",
+      "source_location": "L1",
+      "id": "uninstall_sh",
+      "community": 15,
+      "norm_label": "uninstall.sh"
+    },
+    {
+      "label": "start-git-auto.sh",
+      "file_type": "code",
+      "source_file": "scripts/start-git-auto.sh",
+      "source_location": "L1",
+      "id": "scripts_start_git_auto_sh",
+      "community": 16,
+      "norm_label": "start-git-auto.sh"
+    },
+    {
+      "label": "test-handshake.sh",
+      "file_type": "code",
+      "source_file": "scripts/test-handshake.sh",
+      "source_location": "L1",
+      "id": "scripts_test_handshake_sh",
+      "community": 17,
+      "norm_label": "test-handshake.sh"
+    },
+    {
+      "label": "stop-git-auto.sh",
+      "file_type": "code",
+      "source_file": "scripts/stop-git-auto.sh",
+      "source_location": "L1",
+      "id": "scripts_stop_git_auto_sh",
+      "community": 18,
+      "norm_label": "stop-git-auto.sh"
+    },
+    {
+      "label": "check-unit-complete.sh",
+      "file_type": "code",
+      "source_file": "scripts/check-unit-complete.sh",
+      "source_location": "L1",
+      "id": "scripts_check_unit_complete_sh",
+      "community": 19,
+      "norm_label": "check-unit-complete.sh"
+    },
+    {
+      "label": "watch-pending.sh",
+      "file_type": "code",
+      "source_file": "scripts/watch-pending.sh",
+      "source_location": "L1",
+      "id": "scripts_watch_pending_sh",
+      "community": 20,
+      "norm_label": "watch-pending.sh"
+    },
+    {
+      "label": "handshake.py",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L1",
+      "id": "scripts_handshake_py",
+      "community": 1,
+      "norm_label": "handshake.py"
+    },
+    {
+      "label": "get_repo_root()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L22",
+      "id": "scripts_handshake_get_repo_root",
+      "community": 1,
+      "norm_label": "get_repo_root()"
+    },
+    {
+      "label": "get_git_dir()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L32",
+      "id": "scripts_handshake_get_git_dir",
+      "community": 1,
+      "norm_label": "get_git_dir()"
+    },
+    {
+      "label": "pending_commit_path()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L36",
+      "id": "scripts_handshake_pending_commit_path",
+      "community": 2,
+      "norm_label": "pending_commit_path()"
+    },
+    {
+      "label": "commit_message_path()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L40",
+      "id": "scripts_handshake_commit_message_path",
+      "community": 9,
+      "norm_label": "commit_message_path()"
+    },
+    {
+      "label": "write_pending_commit()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L44",
+      "id": "scripts_handshake_write_pending_commit",
+      "community": 2,
+      "norm_label": "write_pending_commit()"
+    },
+    {
+      "label": "read_pending_commit()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L62",
+      "id": "scripts_handshake_read_pending_commit",
+      "community": 2,
+      "norm_label": "read_pending_commit()"
+    },
+    {
+      "label": "write_commit_message()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L74",
+      "id": "scripts_handshake_write_commit_message",
+      "community": 9,
+      "norm_label": "write_commit_message()"
+    },
+    {
+      "label": "wait_for_commit_message()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L82",
+      "id": "scripts_handshake_wait_for_commit_message",
+      "community": 9,
+      "norm_label": "wait_for_commit_message()"
+    },
+    {
+      "label": "clear_handshake_files()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L95",
+      "id": "scripts_handshake_clear_handshake_files",
+      "community": 2,
+      "norm_label": "clear_handshake_files()"
+    },
+    {
+      "label": "get_current_branch()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L103",
+      "id": "scripts_handshake_get_current_branch",
+      "community": 3,
+      "norm_label": "get_current_branch()"
+    },
+    {
+      "label": "get_stat_summary()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L111",
+      "id": "scripts_handshake_get_stat_summary",
+      "community": 3,
+      "norm_label": "get_stat_summary()"
+    },
+    {
+      "label": "get_changed_files()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L128",
+      "id": "scripts_handshake_get_changed_files",
+      "community": 3,
+      "norm_label": "get_changed_files()"
+    },
+    {
+      "label": "unit_check_path()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L143",
+      "id": "scripts_handshake_unit_check_path",
+      "community": 1,
+      "norm_label": "unit_check_path()"
+    },
+    {
+      "label": "write_unit_check()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L147",
+      "id": "scripts_handshake_write_unit_check",
+      "community": 3,
+      "norm_label": "write_unit_check()"
+    },
+    {
+      "label": "read_unit_check()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L161",
+      "id": "scripts_handshake_read_unit_check",
+      "community": 1,
+      "norm_label": "read_unit_check()"
+    },
+    {
+      "label": "clear_unit_check()",
+      "file_type": "code",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L173",
+      "id": "scripts_handshake_clear_unit_check",
+      "community": 1,
+      "norm_label": "clear_unit_check()"
+    },
+    {
+      "label": "Write pending-commit.json \u2014 simulates what git-auto will do on threshold.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L49",
+      "id": "scripts_handshake_rationale_49",
+      "community": 2,
+      "norm_label": "write pending-commit.json \u2014 simulates what git-auto will do on threshold."
+    },
+    {
+      "label": "Read pending-commit.json. Returns None if not found.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L63",
+      "id": "scripts_handshake_rationale_63",
+      "community": 2,
+      "norm_label": "read pending-commit.json. returns none if not found."
+    },
+    {
+      "label": "Write commit-message.txt for git-auto to pick up.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L75",
+      "id": "scripts_handshake_rationale_75",
+      "community": 9,
+      "norm_label": "write commit-message.txt for git-auto to pick up."
+    },
+    {
+      "label": "Poll for commit-message.txt. Returns message or None on timeout.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L83",
+      "id": "scripts_handshake_rationale_83",
+      "community": 9,
+      "norm_label": "poll for commit-message.txt. returns message or none on timeout."
+    },
+    {
+      "label": "Remove both handshake files after commit is done.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L96",
+      "id": "scripts_handshake_rationale_96",
+      "community": 2,
+      "norm_label": "remove both handshake files after commit is done."
+    },
+    {
+      "label": "Get lightweight diff stat \u2014 never full diff content.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L112",
+      "id": "scripts_handshake_rationale_112",
+      "community": 3,
+      "norm_label": "get lightweight diff stat \u2014 never full diff content."
+    },
+    {
+      "label": "Get list of changed file paths (staged + unstaged).",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L129",
+      "id": "scripts_handshake_rationale_129",
+      "community": 3,
+      "norm_label": "get list of changed file paths (staged + unstaged)."
+    },
+    {
+      "label": "Write unit-check.json \u2014 signals Claude to evaluate whether a logical unit is com",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L148",
+      "id": "scripts_handshake_rationale_148",
+      "community": 3,
+      "norm_label": "write unit-check.json \u2014 signals claude to evaluate whether a logical unit is com"
+    },
+    {
+      "label": "Read unit-check.json. Returns None if not found.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L162",
+      "id": "scripts_handshake_rationale_162",
+      "community": 1,
+      "norm_label": "read unit-check.json. returns none if not found."
+    },
+    {
+      "label": "Remove unit-check.json after Claude has responded.",
+      "file_type": "rationale",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L174",
+      "id": "scripts_handshake_rationale_174",
+      "community": 1,
+      "norm_label": "remove unit-check.json after claude has responded."
+    },
+    {
+      "label": "hooks.json",
+      "file_type": "code",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L1",
+      "id": "hooks_hooks_json",
+      "community": 10,
+      "norm_label": "hooks.json"
+    },
+    {
+      "label": "hooks",
+      "file_type": "code",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L2",
+      "id": "hooks_hooks_hooks",
+      "community": 10,
+      "norm_label": "hooks"
+    },
+    {
+      "label": "SessionStart",
+      "file_type": "code",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L3",
+      "id": "hooks_hooks_hooks_sessionstart",
+      "community": 10,
+      "norm_label": "sessionstart"
+    },
+    {
+      "label": "PostToolUse",
+      "file_type": "code",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L13",
+      "id": "hooks_hooks_hooks_posttooluse",
+      "community": 10,
+      "norm_label": "posttooluse"
+    },
+    {
+      "label": "plugin.json",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L1",
+      "id": "claude_plugin_plugin_json",
+      "community": 0,
+      "norm_label": "plugin.json"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L2",
+      "id": "claude_plugin_plugin_name",
+      "community": 0,
+      "norm_label": "name"
+    },
+    {
+      "label": "version",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L3",
+      "id": "claude_plugin_plugin_version",
+      "community": 0,
+      "norm_label": "version"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L4",
+      "id": "claude_plugin_plugin_description",
+      "community": 0,
+      "norm_label": "description"
+    },
+    {
+      "label": "author",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L5",
+      "id": "claude_plugin_plugin_author",
+      "community": 0,
+      "norm_label": "author"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L6",
+      "id": "claude_plugin_plugin_author_name",
+      "community": 0,
+      "norm_label": "name"
+    },
+    {
+      "label": "email",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L7",
+      "id": "claude_plugin_plugin_author_email",
+      "community": 0,
+      "norm_label": "email"
+    },
+    {
+      "label": "url",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L8",
+      "id": "claude_plugin_plugin_author_url",
+      "community": 0,
+      "norm_label": "url"
+    },
+    {
+      "label": "homepage",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L10",
+      "id": "claude_plugin_plugin_homepage",
+      "community": 0,
+      "norm_label": "homepage"
+    },
+    {
+      "label": "repository",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L11",
+      "id": "claude_plugin_plugin_repository",
+      "community": 0,
+      "norm_label": "repository"
+    },
+    {
+      "label": "license",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L12",
+      "id": "claude_plugin_plugin_license",
+      "community": 0,
+      "norm_label": "license"
+    },
+    {
+      "label": "keywords",
+      "file_type": "code",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L13",
+      "id": "claude_plugin_plugin_keywords",
+      "community": 0,
+      "norm_label": "keywords"
+    },
+    {
+      "label": "CLAUDE.md \u2014 Plugin Codebase Guide",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_md",
+      "community": 7,
+      "norm_label": "claude.md \u2014 plugin codebase guide"
+    },
+    {
+      "label": "Session-Specific Instructions",
+      "file_type": "document",
+      "source_file": "session-specific-instructions.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "session_specific_instructions",
+      "community": 12,
+      "norm_label": "session-specific instructions"
+    },
+    {
+      "label": "README \u2014 minimal-git-workflow",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme",
+      "community": 11,
+      "norm_label": "readme \u2014 minimal-git-workflow"
+    },
+    {
+      "label": "Session Index",
+      "file_type": "document",
+      "source_file": ".claude/sessions/INDEX.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "sessions_index",
+      "community": 12,
+      "norm_label": "session index"
+    },
+    {
+      "label": "Command: status",
+      "file_type": "document",
+      "source_file": "commands/status.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commands_status",
+      "community": 13,
+      "norm_label": "command: status"
+    },
+    {
+      "label": "Command: wrapup",
+      "file_type": "document",
+      "source_file": "commands/wrapup.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commands_wrapup",
+      "community": 4,
+      "norm_label": "command: wrapup"
+    },
+    {
+      "label": "Command: configure",
+      "file_type": "document",
+      "source_file": "commands/configure.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commands_configure",
+      "community": 8,
+      "norm_label": "command: configure"
+    },
+    {
+      "label": "Command: unit-commit",
+      "file_type": "document",
+      "source_file": "commands/unit-commit.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commands_unit_commit",
+      "community": 5,
+      "norm_label": "command: unit-commit"
+    },
+    {
+      "label": "Command: commit",
+      "file_type": "document",
+      "source_file": "commands/commit.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commands_commit",
+      "community": 4,
+      "norm_label": "command: commit"
+    },
+    {
+      "label": "Skill: status",
+      "file_type": "document",
+      "source_file": "skills/status/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "skills_skill_status",
+      "community": 13,
+      "norm_label": "skill: status"
+    },
+    {
+      "label": "Skill: wrapup",
+      "file_type": "document",
+      "source_file": "skills/wrapup/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "skills_skill_wrapup",
+      "community": 4,
+      "norm_label": "skill: wrapup"
+    },
+    {
+      "label": "Skill: commit",
+      "file_type": "document",
+      "source_file": "skills/commit/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "skills_skill_commit",
+      "community": 4,
+      "norm_label": "skill: commit"
+    },
+    {
+      "label": "Skill: configure",
+      "file_type": "document",
+      "source_file": "skills/configure/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "skills_skill_configure",
+      "community": 8,
+      "norm_label": "skill: configure"
+    },
+    {
+      "label": "Skill: unit-commit",
+      "file_type": "document",
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "skills_skill_unit_commit",
+      "community": 5,
+      "norm_label": "skill: unit-commit"
+    },
+    {
+      "label": "minimal-git-workflow Plugin v2.0.0",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 7",
+      "source_url": null,
+      "captured_at": null,
+      "author": "ZahraAnam",
+      "contributor": null,
+      "id": "minimal_git_workflow_plugin",
+      "community": 11,
+      "norm_label": "minimal-git-workflow plugin v2.0.0"
+    },
+    {
+      "label": "Pathway A \u2014 Threshold-Based Commit",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pathway_a_threshold",
+      "community": 6,
+      "norm_label": "pathway a \u2014 threshold-based commit"
+    },
+    {
+      "label": "Pathway B \u2014 Logical-Unit Commit",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pathway_b_unit_commit",
+      "community": 5,
+      "norm_label": "pathway b \u2014 logical-unit commit"
+    },
+    {
+      "label": "Handshake File Protocol",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 54",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "handshake_protocol",
+      "community": 7,
+      "norm_label": "handshake file protocol"
+    },
+    {
+      "label": "git-auto-config.json Structure",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 63",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "git_auto_config",
+      "community": 7,
+      "norm_label": "git-auto-config.json structure"
+    },
+    {
+      "label": "scripts/handshake.py",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 43",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "handshake_py",
+      "community": 6,
+      "norm_label": "scripts/handshake.py"
+    },
+    {
+      "label": "scripts/watch-pending.sh",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 44",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "watch_pending_sh",
+      "community": 5,
+      "norm_label": "scripts/watch-pending.sh"
+    },
+    {
+      "label": "scripts/start-git-auto.sh",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 45",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "start_git_auto_sh",
+      "community": 8,
+      "norm_label": "scripts/start-git-auto.sh"
+    },
+    {
+      "label": "scripts/check-unit-complete.sh",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 46",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "check_unit_complete_sh",
+      "community": 5,
+      "norm_label": "scripts/check-unit-complete.sh"
+    },
+    {
+      "label": "scripts/stop-git-auto.sh",
+      "file_type": "code",
+      "source_file": "commands/wrapup.md",
+      "source_location": "line 33",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "stop_git_auto_sh",
+      "community": 4,
+      "norm_label": "scripts/stop-git-auto.sh"
+    },
+    {
+      "label": "hooks/hooks.json",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 47",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "hooks_json",
+      "community": 8,
+      "norm_label": "hooks/hooks.json"
+    },
+    {
+      "label": ".claude-plugin/plugin.json",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 48",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "plugin_json",
+      "community": 7,
+      "norm_label": ".claude-plugin/plugin.json"
+    },
+    {
+      "label": ".git/pending-commit.json",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 56",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pending_commit_json",
+      "community": 6,
+      "norm_label": ".git/pending-commit.json"
+    },
+    {
+      "label": ".git/commit-message.txt",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 57",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "commit_message_txt",
+      "community": 6,
+      "norm_label": ".git/commit-message.txt"
+    },
+    {
+      "label": ".git/unit-check.json",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 58",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "unit_check_json",
+      "community": 5,
+      "norm_label": ".git/unit-check.json"
+    },
+    {
+      "label": ".git/git-auto-state.json",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 59",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "git_auto_state_json",
+      "community": 8,
+      "norm_label": ".git/git-auto-state.json"
+    },
+    {
+      "label": "git-auto CLI Tool",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 16",
+      "source_url": "https://github.com/ZahraAnam/automate-git-commands",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "git_auto_tool",
+      "community": 6,
+      "norm_label": "git-auto cli tool"
+    },
+    {
+      "label": "Session Context Invariant \u2014 No Raw Diffs in Context",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 36",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "session_context_invariant",
+      "community": 11,
+      "norm_label": "session context invariant \u2014 no raw diffs in context"
+    },
+    {
+      "label": "Race Condition Guard \u2014 High files_threshold with unit_commit",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "line 38",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "race_condition_guard",
+      "community": 7,
+      "norm_label": "race condition guard \u2014 high files_threshold with unit_commit"
+    },
+    {
+      "label": "Conventional Commits Format",
+      "file_type": "concept",
+      "source_file": "commands/commit.md",
+      "source_location": "line 36",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "conventional_commit_format",
+      "community": 4,
+      "norm_label": "conventional commits format"
+    },
+    {
+      "label": "Session Summary Protocol",
+      "file_type": "concept",
+      "source_file": "session-specific-instructions.md",
+      "source_location": "line 12",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "session_summary_protocol",
+      "community": 12,
+      "norm_label": "session summary protocol"
+    },
+    {
+      "label": "Plugin Enhancements Plan (external)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "line 62",
+      "source_url": "https://github.com/ZahraAnam/project_planner/blob/main/plugin-enhancements-plan.md",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "plugin_enhancements_plan",
+      "community": 11,
+      "norm_label": "plugin enhancements plan (external)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_get_repo_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_get_git_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_pending_commit_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_commit_message_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_write_pending_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_read_pending_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_write_commit_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_wait_for_commit_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_clear_handshake_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_get_current_branch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_get_stat_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_get_changed_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L143",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_unit_check_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L147",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_write_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_read_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L173",
+      "weight": 1.0,
+      "source": "scripts_handshake_py",
+      "target": "scripts_handshake_clear_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "scripts_handshake_get_git_dir",
+      "target": "scripts_handshake_get_repo_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "scripts_handshake_pending_commit_path",
+      "target": "scripts_handshake_get_git_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "scripts_handshake_commit_message_path",
+      "target": "scripts_handshake_get_git_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "scripts_handshake_unit_check_path",
+      "target": "scripts_handshake_get_git_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_pending_commit",
+      "target": "scripts_handshake_pending_commit_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "scripts_handshake_read_pending_commit",
+      "target": "scripts_handshake_pending_commit_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "scripts_handshake_clear_handshake_files",
+      "target": "scripts_handshake_pending_commit_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_commit_message",
+      "target": "scripts_handshake_commit_message_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "scripts_handshake_wait_for_commit_message",
+      "target": "scripts_handshake_commit_message_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "scripts_handshake_clear_handshake_files",
+      "target": "scripts_handshake_commit_message_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_49",
+      "target": "scripts_handshake_write_pending_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_63",
+      "target": "scripts_handshake_read_pending_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_75",
+      "target": "scripts_handshake_write_commit_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_83",
+      "target": "scripts_handshake_wait_for_commit_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_96",
+      "target": "scripts_handshake_clear_handshake_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L151",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_unit_check",
+      "target": "scripts_handshake_get_current_branch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_unit_check",
+      "target": "scripts_handshake_get_stat_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_112",
+      "target": "scripts_handshake_get_stat_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_unit_check",
+      "target": "scripts_handshake_get_changed_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_129",
+      "target": "scripts_handshake_get_changed_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L149",
+      "weight": 1.0,
+      "source": "scripts_handshake_write_unit_check",
+      "target": "scripts_handshake_unit_check_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "scripts_handshake_read_unit_check",
+      "target": "scripts_handshake_unit_check_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "scripts_handshake_clear_unit_check",
+      "target": "scripts_handshake_unit_check_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L148",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_148",
+      "target": "scripts_handshake_write_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L162",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_162",
+      "target": "scripts_handshake_read_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/handshake.py",
+      "source_location": "L174",
+      "weight": 1.0,
+      "source": "scripts_handshake_rationale_174",
+      "target": "scripts_handshake_clear_unit_check",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "hooks_hooks_json",
+      "target": "hooks_hooks_hooks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "hooks_hooks_hooks",
+      "target": "hooks_hooks_hooks_sessionstart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/hooks.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "hooks_hooks_hooks",
+      "target": "hooks_hooks_hooks_posttooluse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_author",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_homepage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_repository",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_license",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_json",
+      "target": "claude_plugin_plugin_keywords",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_author",
+      "target": "claude_plugin_plugin_author_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_author",
+      "target": "claude_plugin_plugin_author_email",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude-plugin/plugin.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "claude_plugin_plugin_author",
+      "target": "claude_plugin_plugin_author_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "minimal_git_workflow_plugin"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "pathway_a_threshold"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "pathway_b_unit_commit"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 54",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "handshake_protocol"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 63",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "git_auto_config"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 43",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 44",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "watch_pending_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 45",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "start_git_auto_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 46",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "check_unit_complete_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 47",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "hooks_json"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 48",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "plugin_json"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 36",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "session_context_invariant"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 38",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "race_condition_guard"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 16",
+      "weight": 1.0,
+      "source": "claude_md",
+      "target": "git_auto_tool"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "session-specific-instructions.md",
+      "source_location": "line 12",
+      "weight": 1.0,
+      "source": "session_specific_instructions",
+      "target": "session_summary_protocol"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "session-specific-instructions.md",
+      "source_location": null,
+      "weight": 0.75,
+      "source": "session_specific_instructions",
+      "target": "sessions_index"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "minimal_git_workflow_plugin"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "line 16",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "git_auto_tool"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "line 62",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "plugin_enhancements_plan"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "commands/status.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "commands_status",
+      "target": "skills_skill_status"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "commands/wrapup.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "commands_wrapup",
+      "target": "skills_skill_wrapup"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "commands/configure.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "commands_configure",
+      "target": "skills_skill_configure"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "commands/unit-commit.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "commands_unit_commit",
+      "target": "skills_skill_unit_commit"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "commands/commit.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "commands_commit",
+      "target": "skills_skill_commit"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/status/SKILL.md",
+      "source_location": "line 19",
+      "weight": 1.0,
+      "source": "skills_skill_status",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/wrapup/SKILL.md",
+      "source_location": "line 12",
+      "weight": 1.0,
+      "source": "skills_skill_wrapup",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/wrapup/SKILL.md",
+      "source_location": "line 33",
+      "weight": 1.0,
+      "source": "skills_skill_wrapup",
+      "target": "stop_git_auto_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/wrapup/SKILL.md",
+      "source_location": "line 14",
+      "weight": 1.0,
+      "source": "skills_skill_wrapup",
+      "target": "skills_skill_commit"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/commit/SKILL.md",
+      "source_location": "line 12",
+      "weight": 1.0,
+      "source": "skills_skill_commit",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/commit/SKILL.md",
+      "source_location": "line 36",
+      "weight": 1.0,
+      "source": "skills_skill_commit",
+      "target": "conventional_commit_format"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/commit/SKILL.md",
+      "source_location": "line 39",
+      "weight": 1.0,
+      "source": "skills_skill_commit",
+      "target": "session_context_invariant"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/configure/SKILL.md",
+      "source_location": "line 12",
+      "weight": 1.0,
+      "source": "skills_skill_configure",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/configure/SKILL.md",
+      "source_location": "line 49",
+      "weight": 1.0,
+      "source": "skills_skill_configure",
+      "target": "git_auto_config"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/configure/SKILL.md",
+      "source_location": "line 73",
+      "weight": 1.0,
+      "source": "skills_skill_configure",
+      "target": "stop_git_auto_sh"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/configure/SKILL.md",
+      "source_location": "line 74",
+      "weight": 1.0,
+      "source": "skills_skill_configure",
+      "target": "start_git_auto_sh"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 14",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "handshake_py"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "unit_check_json"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "check_unit_complete_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "watch_pending_sh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 46",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "conventional_commit_format"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/unit-commit/SKILL.md",
+      "source_location": "line 52",
+      "weight": 1.0,
+      "source": "skills_skill_unit_commit",
+      "target": "session_context_invariant"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "pathway_a_threshold",
+      "target": "minimal_git_workflow_plugin"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "source": "pathway_b_unit_commit",
+      "target": "minimal_git_workflow_plugin"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 36",
+      "weight": 1.0,
+      "source": "session_context_invariant",
+      "target": "minimal_git_workflow_plugin"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "pathway_a_threshold",
+      "target": "pending_commit_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "pathway_a_threshold",
+      "target": "commit_message_txt"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "pathway_a_threshold",
+      "target": "git_auto_tool"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 31",
+      "weight": 1.0,
+      "source": "pathway_a_threshold",
+      "target": "watch_pending_sh"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 29",
+      "weight": 0.75,
+      "source": "pathway_a_threshold",
+      "target": "pathway_b_unit_commit"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "source": "pathway_b_unit_commit",
+      "target": "unit_check_json"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "source": "pathway_b_unit_commit",
+      "target": "check_unit_complete_sh"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "source": "pathway_b_unit_commit",
+      "target": "watch_pending_sh"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "handshake_protocol",
+      "target": "git_auto_config"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 38",
+      "weight": 1.0,
+      "source": "race_condition_guard",
+      "target": "git_auto_config"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 56",
+      "weight": 1.0,
+      "source": "handshake_py",
+      "target": "pending_commit_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 57",
+      "weight": 1.0,
+      "source": "handshake_py",
+      "target": "commit_message_txt"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 58",
+      "weight": 1.0,
+      "source": "handshake_py",
+      "target": "unit_check_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 44",
+      "weight": 1.0,
+      "source": "watch_pending_sh",
+      "target": "pending_commit_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 44",
+      "weight": 1.0,
+      "source": "watch_pending_sh",
+      "target": "unit_check_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 59",
+      "weight": 1.0,
+      "source": "start_git_auto_sh",
+      "target": "git_auto_state_json"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 47",
+      "weight": 1.0,
+      "source": "hooks_json",
+      "target": "start_git_auto_sh"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 46",
+      "weight": 1.0,
+      "source": "check_unit_complete_sh",
+      "target": "unit_check_json"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 47",
+      "weight": 1.0,
+      "source": "hooks_json",
+      "target": "check_unit_complete_sh"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 56",
+      "weight": 1.0,
+      "source": "git_auto_tool",
+      "target": "pending_commit_json"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 57",
+      "weight": 1.0,
+      "source": "git_auto_tool",
+      "target": "commit_message_txt"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "line 59",
+      "weight": 1.0,
+      "source": "git_auto_tool",
+      "target": "git_auto_state_json"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "threshold_commit_flow",
+      "label": "Threshold-Based Commit Flow (Pathway A)",
+      "nodes": [
+        "git_auto_tool",
+        "pending_commit_json",
+        "watch_pending_sh",
+        "skills_skill_commit",
+        "handshake_py",
+        "commit_message_txt"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "unit_commit_flow",
+      "label": "Logical-Unit Commit Flow (Pathway B)",
+      "nodes": [
+        "check_unit_complete_sh",
+        "unit_check_json",
+        "watch_pending_sh",
+        "skills_skill_unit_commit",
+        "handshake_py"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "skill_command_pair_pattern",
+      "label": "Skill-Command Pair Pattern",
+      "nodes": [
+        "skills_skill_commit",
+        "commands_commit",
+        "skills_skill_unit_commit",
+        "commands_unit_commit",
+        "skills_skill_configure",
+        "commands_configure"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md"
+    }
+  ],
+  "built_at_commit": "34911f1b21fb06374384e38a6429853fcbdf2006"
+}
