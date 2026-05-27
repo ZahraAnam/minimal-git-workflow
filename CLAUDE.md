@@ -70,10 +70,12 @@ All files live under `.git/` (gitignored):
     "squash_threshold": 0,
     "catchup": false,
     "cooldown": 3.0,
-    "model": "open-mistral-nemo"
+    "model": "open-mistral-nemo",
+    "claude_handshake": true,
+    "claude_timeout": 30
   },
   "unit_commit": false
 }
 ```
 
-`model` is the git-auto fallback if Claude doesn't write a commit message in time.
+`model` is the primary LLM git-auto uses for commit messages. With `claude_handshake: true`, git-auto falls back to this model if Claude does not write `commit-message.txt` within `claude_timeout` seconds.
