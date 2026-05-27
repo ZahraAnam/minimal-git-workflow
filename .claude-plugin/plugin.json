@@ -1,0 +1,14 @@
+{
+  "name": "minimal-git-workflow",
+  "version": "2.0.0",
+  "description": "Automated git workflow plugin. Auto-starts git-auto on session start, uses Claude session context for commit messages, and wraps up cleanly on session end.",
+  "author": {
+    "name": "ZahraAnam",
+    "email": "anamzahraipcv@gmail.com",
+    "url": "https://github.com/ZahraAnam"
+  },
+  "homepage": "https://github.com/ZahraAnam/minimal-git-workflow",
+  "repository": "https://github.com/ZahraAnam/minimal-git-workflow",
+  "license": "MIT",
+  "keywords": ["git", "github", "commit", "automation", "workflow"]
+}
