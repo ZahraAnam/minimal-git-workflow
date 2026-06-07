@@ -5,6 +5,21 @@ description: Configure git-auto settings for this project. Creates or updates gi
 
 Help the user create or update their `git-auto-config.json` file in the repo root.
 
+## Step 0 — Ensure a clean slate before changing modes
+
+Changing `git-auto-config.json` (e.g. toggling `unit_commit`, switching
+`files_threshold`/`threshold` modes) changes how commits get triggered going
+forward. Before applying any change, check for unpushed commits so the new
+mode starts from a known-clean state:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" unpushed-status
+```
+
+If `count > 0`, run `/minimal-git-workflow:clean-slate` and let the user choose
+push / squash / leave-as-is before continuing to Step 1. If `count == 0`,
+proceed directly to Step 1.
+
 ## Step 1 — Check existing config
 
 Run:
