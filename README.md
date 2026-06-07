@@ -47,6 +47,11 @@ Key settings:
 
 When `unit_commit: true`, set `files_threshold` high (e.g. 999) to avoid race conditions between the two pathways.
 
+Also avoid combining `catchup: true` with `unit_commit: true` — catchup bulk-commits
+all pending changes (with a generic Mistral-generated message) on startup, before
+the unit-commit pathway gets a chance to evaluate and bundle a logical unit. Set
+`catchup: false` when `unit_commit: true` is enabled.
+
 ## Skills
 
 | Skill         | Trigger                        | Description                                    |

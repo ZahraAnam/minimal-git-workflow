@@ -44,6 +44,20 @@ Ask the user for each setting. Show the default and a brief explanation:
 7. **unit_commit** (default: false)
    "Enable logical-unit-based commits? When true, Claude evaluates after each file edit whether a complete logical unit of work has been finished and commits if so — independent of the files_threshold. (true/false)"
 
+## Step 2.5 — Warn about catchup + unit_commit conflict
+
+If the user answered `catchup: true` AND `unit_commit: true`, warn them before
+writing the config:
+
+"Heads up: `catchup` bulk-commits all pending changes immediately on startup
+(with a generic Mistral-generated message), before the unit-commit pathway
+ever gets a chance to evaluate and bundle a logical unit. Combining both
+means catchup will likely race ahead and commit your in-flight work first.
+Recommend setting `catchup: false` when `unit_commit: true` is enabled.
+Keep both as you specified, or set `catchup: false`?"
+
+Use their answer for the value written in Step 3.
+
 ## Step 3 — Write config file
 
 Write the values to `git-auto-config.json` in the repo root:
