@@ -20,12 +20,12 @@ make_repo() {
   git init -q "$repo"
   git -C "$repo" config user.email "test@example.com"
   git -C "$repo" config user.name "Test"
-  git -C "$repo" config push.default upstream
   git -C "$repo" remote add origin "$REMOTE"
+  git -C "$repo" checkout -q -b "$name"
   echo "init-$name" > "$repo/README.md"
   git -C "$repo" add README.md
   git -C "$repo" commit -q -m "init"
-  git -C "$repo" push -q -u origin "HEAD:$name"
+  git -C "$repo" push -q -u origin "$name"
   echo "$repo"
 }
 
