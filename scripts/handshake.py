@@ -127,7 +127,12 @@ def get_unpushed_status() -> dict:
         ["git", "rev-list", "@{u}..HEAD", "--count"],
         capture_output=True, text=True
     )
-    count = int(count_result.stdout.strip() or "0")
+    count = 0
+    if count_result.returncode == 0:
+        try:
+            count = int(count_result.stdout.strip() or "0")
+        except ValueError:
+            count = 0
 
     subjects: list[str] = []
     if count > 0:
@@ -135,7 +140,9 @@ def get_unpushed_status() -> dict:
             ["git", "log", "@{u}..HEAD", "--format=%s"],
             capture_output=True, text=True
         )
-        subjects = [s for s in log_result.stdout.splitlines() if s.strip()]
+        if log_result.returncode == 0:
+            # newest-first — matches `git log` default order; downstream consumers display in this order
+            subjects = [s for s in log_result.stdout.splitlines() if s.strip()]
 
     return {"count": count, "branch": branch, "upstream": upstream, "subjects": subjects}
 
