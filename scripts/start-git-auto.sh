@@ -36,6 +36,11 @@ except:
 ")
   if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
     echo "[minimal-git-workflow] git-auto already running for this project (PID $PID) — skipping." >&2
+    UNPUSHED=$(git -C "$REPO_ROOT" rev-list '@{u}..HEAD' --count 2>/dev/null || echo 0)
+    if [ "$UNPUSHED" -gt 0 ]; then
+      UPSTREAM=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || echo "unknown")
+      echo "[minimal-git-workflow] UNPUSHED_COMMITS: $UNPUSHED ahead of $UPSTREAM — invoke /minimal-git-workflow:clean-slate before continuing." >&2
+    fi
     echo "[minimal-git-workflow] MONITOR_REQUIRED: Call the Monitor tool with command: bash \"$PLUGIN_ROOT/scripts/watch-pending.sh\" — this delivers pending commit notifications to your session."
     exit 0
   fi
@@ -57,6 +62,14 @@ if [ -z "$CONFIG_FILE" ]; then
 fi
 
 echo "[minimal-git-workflow] Starting git-auto with config: $CONFIG_FILE" >&2
+
+# Detect unpushed commits — surface them so Claude can offer clean-slate triage
+# before git-auto starts operating on this branch.
+UNPUSHED=$(git -C "$REPO_ROOT" rev-list '@{u}..HEAD' --count 2>/dev/null || echo 0)
+if [ "$UNPUSHED" -gt 0 ]; then
+  UPSTREAM=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || echo "unknown")
+  echo "[minimal-git-workflow] UNPUSHED_COMMITS: $UNPUSHED ahead of $UPSTREAM — invoke /minimal-git-workflow:clean-slate before continuing." >&2
+fi
 
 # Start git-auto in background, scoped to this project, logging to .git/git-auto.log
 nohup git-auto start --path "$REPO_ROOT" \
