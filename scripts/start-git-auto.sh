@@ -58,8 +58,33 @@ fi
 
 echo "[minimal-git-workflow] Starting git-auto with config: $CONFIG_FILE" >&2
 
+# Read claude_handshake settings from config JSON (if present)
+HANDSHAKE_FLAGS=""
+if [ "${CONFIG_FILE##*.}" = "json" ]; then
+  CLAUDE_HANDSHAKE=$(python3 -c "
+import json
+try:
+    c = json.load(open('$CONFIG_FILE'))
+    print(c.get('start', {}).get('claude_handshake', False))
+except:
+    print(False)
+")
+  CLAUDE_TIMEOUT=$(python3 -c "
+import json
+try:
+    c = json.load(open('$CONFIG_FILE'))
+    print(c.get('start', {}).get('claude_timeout', 30))
+except:
+    print(30)
+")
+  if [ "$CLAUDE_HANDSHAKE" = "True" ]; then
+    HANDSHAKE_FLAGS="--claude-handshake --claude-timeout $CLAUDE_TIMEOUT"
+    echo "[minimal-git-workflow] Claude handshake enabled (timeout: ${CLAUDE_TIMEOUT}s)" >&2
+  fi
+fi
+
 # Start git-auto in background, scoped to this project, logging to .git/git-auto.log
-nohup git-auto start --path "$REPO_ROOT" \
+nohup git-auto start --path "$REPO_ROOT" $HANDSHAKE_FLAGS \
   >> "$REPO_ROOT/.git/git-auto.log" 2>&1 &
 
 echo "[minimal-git-workflow] git-auto started for $REPO_ROOT (PID $!)." >&2
