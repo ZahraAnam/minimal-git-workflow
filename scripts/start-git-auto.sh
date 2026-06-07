@@ -101,9 +101,11 @@ nohup git-auto start --path "$REPO_ROOT" \
 GIT_AUTO_PID=$!
 
 # Verify the daemon actually stayed alive — invalid config keys (or other
-# startup errors) cause git-auto to exit within ~1s, but a naive launch report
-# would still claim success. Give it a moment, then check.
-sleep 1.5
+# startup errors) cause git-auto to exit, but a naive launch report would
+# still claim success. Measured live: real crash lands ~2.0s in (uv/python
+# venv startup runs before config validation) — 1.5s missed it, 3s clears
+# it with margin.
+sleep 3
 if kill -0 "$GIT_AUTO_PID" 2>/dev/null; then
   echo "[minimal-git-workflow] git-auto started for $REPO_ROOT (PID $GIT_AUTO_PID)." >&2
 else
