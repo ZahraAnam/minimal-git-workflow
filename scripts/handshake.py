@@ -108,6 +108,45 @@ def get_current_branch() -> str:
     return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 
+def get_upstream_branch() -> str | None:
+    result = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        capture_output=True, text=True
+    )
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def get_unpushed_status() -> dict:
+    """Detect unpushed commits — count and subjects only, never diffs."""
+    branch = get_current_branch()
+    upstream = get_upstream_branch()
+    if upstream is None:
+        return {"count": 0, "branch": branch, "upstream": None, "subjects": []}
+
+    count_result = subprocess.run(
+        ["git", "rev-list", "@{u}..HEAD", "--count"],
+        capture_output=True, text=True
+    )
+    count = 0
+    if count_result.returncode == 0:
+        try:
+            count = int(count_result.stdout.strip() or "0")
+        except ValueError:
+            count = 0
+
+    subjects: list[str] = []
+    if count > 0:
+        log_result = subprocess.run(
+            ["git", "log", "@{u}..HEAD", "--format=%s"],
+            capture_output=True, text=True
+        )
+        if log_result.returncode == 0:
+            # newest-first — matches `git log` default order; downstream consumers display in this order
+            subjects = [s for s in log_result.stdout.splitlines() if s.strip()]
+
+    return {"count": count, "branch": branch, "upstream": upstream, "subjects": subjects}
+
+
 def get_stat_summary() -> str:
     """Get lightweight diff stat — never full diff content."""
     # Staged changes first
@@ -234,7 +273,11 @@ if __name__ == "__main__":
             print(f"files_changed   : {unit.get('files_changed')}")
             print(f"stat_summary    : {unit.get('stat_summary')}")
 
+    elif cmd == "unpushed-status":
+        print(json.dumps(get_unpushed_status(), indent=2))
+
     else:
         print("Commands: read-pending | write-message '<msg>' | clear | status")
         print("          read-unit-check | write-unit-check | clear-unit-check | unit-check-status")
+        print("          unpushed-status")
         sys.exit(1)

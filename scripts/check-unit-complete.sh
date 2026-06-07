@@ -5,9 +5,25 @@
 
 set -euo pipefail
 
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
-
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Resolve the repo from the edited file's path (tool_input.file_path), not the
+# session's $PWD — Claude may edit files in a different repo than it started in.
+HOOK_INPUT="$(cat)"
+EDITED_FILE=$(printf '%s' "$HOOK_INPUT" | python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    print(data.get('tool_input', {}).get('file_path', ''))
+except Exception:
+    print('')
+")
+
+if [ -n "$EDITED_FILE" ]; then
+  REPO_ROOT=$(git -C "$(dirname "$EDITED_FILE")" rev-parse --show-toplevel 2>/dev/null) || exit 0
+else
+  REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+fi
 
 # Find config file
 CONFIG_FILE=""
@@ -50,7 +66,8 @@ if [ "$CHANGED_COUNT" -eq 0 ]; then
   exit 0
 fi
 
-# Write unit-check.json via handshake.py
-python3 "$PLUGIN_ROOT/scripts/handshake.py" write-unit-check >/dev/null
+# Write unit-check.json via handshake.py — cd into REPO_ROOT first since
+# handshake.py resolves the repo via `git rev-parse --show-toplevel` from cwd.
+(cd "$REPO_ROOT" && python3 "$PLUGIN_ROOT/scripts/handshake.py" write-unit-check) >/dev/null
 
 echo "[minimal-git-workflow] unit-check.json written ($CHANGED_COUNT changed file(s)) — watch-pending.sh will notify Claude." >&2
