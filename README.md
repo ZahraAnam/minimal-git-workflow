@@ -38,24 +38,24 @@ Run `/minimal-git-workflow:configure` inside a Claude Code session to create `gi
 
 Key settings:
 
-| Setting | Default | Description |
-|---|---|---|
-| `files_threshold` | 10 | Files changed before git-auto auto-commits |
-| `push_threshold` | 0 | Unpushed commits before auto-push (0 = disabled) |
-| `unit_commit` | false | Enable logical-unit commit pathway |
-| `model` | open-mistral-nemo | Fallback model for commit messages |
+| Setting           | Default           | Description                                      |
+| ----------------- | ----------------- | ------------------------------------------------ |
+| `files_threshold` | 10                | Files changed before git-auto auto-commits       |
+| `push_threshold`  | 0                 | Unpushed commits before auto-push (0 = disabled) |
+| `unit_commit`     | false             | Enable logical-unit commit pathway               |
+| `model`           | open-mistral-nemo | Fallback model for commit messages               |
 
 When `unit_commit: true`, set `files_threshold` high (e.g. 999) to avoid race conditions between the two pathways.
 
 ## Skills
 
-| Skill | Trigger | Description |
-|---|---|---|
-| `unit-commit` | Auto (watch-pending) or manual | Evaluate + commit logical unit |
-| `commit` | Auto (watch-pending) or manual | Generate message for git-auto threshold commit |
-| `configure` | Manual | Create/update git-auto-config.json |
-| `status` | Manual | Show git-auto state + handshake status |
-| `wrapup` | Manual | Commit pending, stop git-auto cleanly |
+| Skill         | Trigger                        | Description                                    |
+| ------------- | ------------------------------ | ---------------------------------------------- |
+| `unit-commit` | Auto (watch-pending) or manual | Evaluate + commit logical unit                 |
+| `commit`      | Auto (watch-pending) or manual | Generate message for git-auto threshold commit |
+| `configure`   | Manual                         | Create/update git-auto-config.json             |
+| `status`      | Manual                         | Show git-auto state + handshake status         |
+| `wrapup`      | Manual                         | Commit pending, stop git-auto cleanly          |
 
 ## Known Issues / Planned Fixes
 
