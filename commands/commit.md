@@ -41,25 +41,14 @@ Generate a conventional commit message:
 
 Example: `feat(auth): add login validation and session token handling`
 
-## Step 3 — Show message and confirm
+## Step 3 — Write message for git-auto
 
-Show the generated message to the user and ask:
-"Use this commit message? (yes / edit / skip)"
-
-- **yes** → proceed to Step 4
-- **edit** → ask user for their preferred message, use that instead
-- **skip** → tell user git-auto will fall back to its default model
-
-## Step 4 — Write message for git-auto
-
-Run:
+Run immediately — no confirmation prompt:
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" write-message '<commit message>'
 ```
 
-Confirm: "Commit message written. git-auto will pick it up and commit shortly."
-
-## Step 5 — Report
+## Step 4 — Report
 
 After writing, tell the user:
 - What message was used
