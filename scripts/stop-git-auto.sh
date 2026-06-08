@@ -52,6 +52,16 @@ else
 fi
 
 # Verify the daemon actually died — don't trust git-auto stop's report.
+# Give SIGINT a real grace window first: the daemon's signal handler runs
+# observer.stop() + observer.join() + a state-file rewrite before exiting,
+# which takes a beat — checking immediately would false-positive into an
+# unnecessary SIGTERM escalation.
+if [ -n "$PRIOR_PID" ]; then
+  for _ in 1 2 3 4 5 6; do
+    kill -0 "$PRIOR_PID" 2>/dev/null || break
+    sleep 0.5
+  done
+fi
 if [ -n "$PRIOR_PID" ] && kill -0 "$PRIOR_PID" 2>/dev/null; then
   echo "[minimal-git-workflow] PID $PRIOR_PID survived SIGINT (likely masked to SIG_IGN by bash job control) — escalating to SIGTERM." >&2
   kill -TERM "$PRIOR_PID" 2>/dev/null || true
