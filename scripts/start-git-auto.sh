@@ -96,8 +96,17 @@ if [ "$UNPUSHED" -gt 0 ]; then
 fi
 
 # Start git-auto in background, scoped to this project, logging to .git/git-auto.log
-nohup git-auto start --path "$REPO_ROOT" \
-  >> "$REPO_ROOT/.git/git-auto.log" 2>&1 &
+#
+# Bash forces SIGINT/SIGQUIT to SIG_IGN on any `&` async job in a script —
+# nohup only touches SIGHUP. That masked disposition is inherited straight
+# through exec into the daemon, permanently blocking `git-auto stop`'s
+# `os.kill(pid, SIGINT)` (a structural no-op against a SIG_IGN process).
+# Reset both traps to default in a subshell before exec'ing so the daemon can
+# actually receive and act on the stop signal.
+( trap - INT QUIT
+  exec nohup git-auto start --path "$REPO_ROOT" \
+    >> "$REPO_ROOT/.git/git-auto.log" 2>&1
+) &
 GIT_AUTO_PID=$!
 
 # Verify the daemon actually stayed alive — invalid config keys (or other

@@ -18,6 +18,25 @@ rm -f "$REPO_ROOT/.git/pending-commit.json"
 rm -f "$REPO_ROOT/.git/commit-message.txt"
 rm -f "$REPO_ROOT/.git/unit-check.json"
 
+# Capture the PID before stopping — git-auto stop sends SIGINT, but a daemon
+# launched via `nohup ... &` inherits SIGINT/SIGQUIT forced to SIG_IGN by bash's
+# job-control rules. SIGINT against a SIG_IGN process is a structural no-op:
+# git-auto stop reports success unconditionally without re-checking the PID.
+# We verify for real below and escalate to SIGTERM (not maskable this way) if
+# the daemon survived. (Newly started daemons reset these traps — see
+# start-git-auto.sh — but old/already-running ones may still carry the mask.)
+STATE_FILE="$REPO_ROOT/.git/git-auto-state.json"
+PRIOR_PID=""
+if [ -f "$STATE_FILE" ]; then
+  PRIOR_PID=$(python3 -c "
+import json
+try:
+    print(json.load(open('$STATE_FILE')).get('pid') or '')
+except Exception:
+    print('')
+")
+fi
+
 # Run git-auto stop scoped to this project path.
 # --force: without it, git-auto stop blocks on an interactive "Stop anyway?"
 # confirm whenever uncommitted/unpushed work exists. In Claude's non-interactive
@@ -26,10 +45,32 @@ rm -f "$REPO_ROOT/.git/unit-check.json"
 # signal. wrapup.md already surfaces those warnings to the user beforehand,
 # so the confirm here is redundant.
 if command -v git-auto &>/dev/null; then
-  git-auto stop --path "$REPO_ROOT" --force && \
-    echo "[minimal-git-workflow] git-auto stopped for $REPO_ROOT." >&2 || \
-    echo "[minimal-git-workflow] git-auto was not running for $REPO_ROOT." >&2
+  git-auto stop --path "$REPO_ROOT" --force >&2 || true
 else
   echo "[minimal-git-workflow] git-auto not found in PATH." >&2
   exit 1
+fi
+
+# Verify the daemon actually died — don't trust git-auto stop's report.
+if [ -n "$PRIOR_PID" ] && kill -0 "$PRIOR_PID" 2>/dev/null; then
+  echo "[minimal-git-workflow] PID $PRIOR_PID survived SIGINT (likely masked to SIG_IGN by bash job control) — escalating to SIGTERM." >&2
+  kill -TERM "$PRIOR_PID" 2>/dev/null || true
+  for _ in 1 2 3 4; do
+    sleep 0.5
+    kill -0 "$PRIOR_PID" 2>/dev/null || break
+  done
+  if kill -0 "$PRIOR_PID" 2>/dev/null; then
+    echo "[minimal-git-workflow] PID $PRIOR_PID still alive after SIGTERM — forcing SIGKILL." >&2
+    kill -KILL "$PRIOR_PID" 2>/dev/null || true
+    sleep 0.5
+  fi
+fi
+
+if [ -n "$PRIOR_PID" ] && kill -0 "$PRIOR_PID" 2>/dev/null; then
+  echo "[minimal-git-workflow] FAILED to stop git-auto (PID $PRIOR_PID still running) for $REPO_ROOT." >&2
+  exit 1
+elif [ -n "$PRIOR_PID" ]; then
+  echo "[minimal-git-workflow] git-auto stopped for $REPO_ROOT (PID $PRIOR_PID confirmed dead)." >&2
+else
+  echo "[minimal-git-workflow] git-auto was not running for $REPO_ROOT." >&2
 fi
