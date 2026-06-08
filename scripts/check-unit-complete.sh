@@ -54,9 +54,34 @@ fi
 
 UNIT_CHECK="$REPO_ROOT/.git/unit-check.json"
 
-# Don't overwrite existing unit-check.json — Claude hasn't responded to the last one yet
+# Don't overwrite a fresh unit-check.json — Claude hasn't responded to it yet.
+# But one stuck past STALE_AFTER_SECONDS is orphaned (crash/interrupt mid-eval —
+# the same failure mode start-git-auto.sh's STALE_UNIT_CHECK sweep handles at
+# session start, just arriving mid-session instead). Clear it and fall through
+# to regenerate from current state, instead of blocking detection forever.
+STALE_AFTER_SECONDS=300
 if [ -f "$UNIT_CHECK" ]; then
-  exit 0
+  CHECK_STATE=$(python3 -c "
+import json, time
+from datetime import datetime
+try:
+    d = json.load(open('$UNIT_CHECK'))
+    age = int(time.time() - datetime.fromisoformat(d['timestamp']).timestamp())
+    if age < $STALE_AFTER_SECONDS:
+        print('FRESH')
+    else:
+        print(f\"STALE|{d.get('timestamp', 'unknown time')} | {age}s old | {d.get('stat_summary', 'changes detected')} | files: {', '.join(d.get('files_changed', []))}\")
+except Exception:
+    print('STALE|unreadable snapshot')
+" 2>/dev/null)
+
+  if [ "$CHECK_STATE" = "FRESH" ]; then
+    exit 0
+  fi
+
+  STALE_INFO="${CHECK_STATE#STALE|}"
+  echo "[minimal-git-workflow] STALE_UNIT_CHECK: orphaned check from earlier in this session ($STALE_INFO) — never evaluated. Clearing it and regenerating from current state." >&2
+  rm -f "$UNIT_CHECK"
 fi
 
 # Check for uncommitted changes
