@@ -16,6 +16,7 @@ echo "[minimal-git-workflow] Stopping git-auto for $REPO_ROOT" >&2
 # Clean up any stale handshake files for this project
 rm -f "$REPO_ROOT/.git/pending-commit.json"
 rm -f "$REPO_ROOT/.git/commit-message.txt"
+rm -f "$REPO_ROOT/.git/unit-check.json"
 
 # Run git-auto stop scoped to this project path
 if command -v git-auto &>/dev/null; then

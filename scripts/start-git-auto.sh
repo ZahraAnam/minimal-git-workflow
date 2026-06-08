@@ -13,6 +13,30 @@ REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || {
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 STATE_FILE="$REPO_ROOT/.git/git-auto-state.json"
 
+# Any unit-check.json present at SessionStart is necessarily orphaned from a
+# prior session — the new session hasn't made any edits yet, so it can't have
+# written one itself. (check-unit-complete.sh refuses to overwrite an existing
+# unit-check.json, trusting Claude to clear it after responding — but a session
+# that ends without responding, e.g. a crash or restart while git-auto keeps
+# running, leaves it stuck forever and silently blocks Pathway B from then on.)
+#
+# Before clearing, surface its contents — it represents uncommitted work that
+# was never evaluated, and the new session should know about it rather than
+# silently lose the trail.
+UNIT_CHECK="$REPO_ROOT/.git/unit-check.json"
+if [ -f "$UNIT_CHECK" ]; then
+  STALE_INFO=$(python3 -c "
+import json
+try:
+    d = json.load(open('$UNIT_CHECK'))
+    print(f\"{d.get('timestamp', 'unknown time')} | {d.get('stat_summary', 'changes detected')} | files: {', '.join(d.get('files_changed', []))}\")
+except Exception:
+    print('unreadable snapshot')
+" 2>/dev/null)
+  echo "[minimal-git-workflow] STALE_UNIT_CHECK: orphaned check from a previous session ($STALE_INFO) — never evaluated. Clearing it; if uncommitted changes remain, run /minimal-git-workflow:unit-commit to evaluate them now." >&2
+  rm -f "$UNIT_CHECK"
+fi
+
 # Guard: git-auto must be installed
 if ! command -v git-auto &>/dev/null; then
   echo "[minimal-git-workflow] git-auto not found on PATH." >&2
@@ -74,6 +98,19 @@ fi
 # Start git-auto in background, scoped to this project, logging to .git/git-auto.log
 nohup git-auto start --path "$REPO_ROOT" \
   >> "$REPO_ROOT/.git/git-auto.log" 2>&1 &
+GIT_AUTO_PID=$!
 
-echo "[minimal-git-workflow] git-auto started for $REPO_ROOT (PID $!)." >&2
+# Verify the daemon actually stayed alive — invalid config keys (or other
+# startup errors) cause git-auto to exit within ~1s, but a naive launch report
+# would still claim success. Give it a moment, then check.
+sleep 1.5
+if kill -0 "$GIT_AUTO_PID" 2>/dev/null; then
+  echo "[minimal-git-workflow] git-auto started for $REPO_ROOT (PID $GIT_AUTO_PID)." >&2
+else
+  echo "[minimal-git-workflow] git-auto failed to start — it exited immediately. Last log lines:" >&2
+  tail -n 5 "$REPO_ROOT/.git/git-auto.log" >&2 2>/dev/null || true
+  echo "[minimal-git-workflow] Check $CONFIG_FILE for invalid keys or run 'git-auto start --path \"$REPO_ROOT\"' directly to see the full error." >&2
+  exit 1
+fi
+
 echo "[minimal-git-workflow] MONITOR_REQUIRED: Call the Monitor tool with command: bash \"$PLUGIN_ROOT/scripts/watch-pending.sh\" — this delivers pending commit notifications to your session."
