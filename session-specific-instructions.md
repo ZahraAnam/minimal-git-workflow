@@ -2,16 +2,16 @@
 
 ## Current Session
 
-- **Name:** beautify-plan
-- **Group:** plans
-- **Started:** 2026-07-04 15:14
-- **Aim:** Beautify plan
+- **Name:** prepare-pr
+- **Group:** git-related
+- **Started:** 2026-07-04 17:01
+- **Aim:** analyse repo and prepare commits and pr
 
 ---
 
 ## Session Summary Protocol
 
-Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/plans/20260704_1514_beautify-plan.summary.md`
+Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/git-related/20260704_1701_prepare-pr.summary.md`
 
 Proactively write a summary when you detect:
 - User says: done, finished, goodbye, wrap up, end session
