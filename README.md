@@ -57,13 +57,13 @@ Run `/minimal-git-workflow:configure` inside a Claude Code session to create `gi
 
 Key settings:
 
-| Setting           | Default           | Description                                       |
-| ----------------- | ------------------ | -------------------------------------------------- |
-| `files_threshold` | 10                | Files changed before git-auto auto-commits        |
-| `push_threshold`  | 0                 | Unpushed commits before auto-push (0 = disabled)  |
-| `unit_commit`     | false             | Enable logical-unit commit pathway (Pathway B)    |
+| Setting           | Default           | Description                                        |
+| ----------------- | ----------------- | -------------------------------------------------- |
+| `files_threshold` | 10                | Files changed before git-auto auto-commits         |
+| `push_threshold`  | 0                 | Unpushed commits before auto-push (0 = disabled)   |
+| `unit_commit`     | false             | Enable logical-unit commit pathway (Pathway B)     |
 | `catchup`         | false             | Auto-commit whatever is dirty when git-auto starts |
-| `model`           | open-mistral-nemo | Fallback model for git-auto's own commit messages |
+| `model`           | open-mistral-nemo | Fallback model for git-auto's own commit messages  |
 
 When `unit_commit: true`, set `files_threshold` high (e.g. 999) to avoid race conditions between the two pathways.
 
@@ -73,6 +73,12 @@ the unit-commit pathway gets a chance to evaluate and bundle a logical unit. Set
 `catchup: false` when `unit_commit: true` is enabled.
 
 ## Usage
+
+### Background process & wrapup
+
+Regardless of `unit_commit`, `git-auto` runs as a background daemon for the life of the session (started by the `SessionStart` hook, one process per project, tracked by PID in `.git/git-auto-state.json`). With `unit_commit: true`, that daemon isn't doing the committing itself in Pathway B — it just keeps running while Claude coordinates commits through the `unit-check.json` handshake and the `watch-pending.sh` monitor loop.
+
+**Always end the session with `/minimal-git-workflow:wrapup`.** It flushes any pending commit, then stops the daemon cleanly. Skipping it leaves the daemon running orphaned in the background — it won't stop on its own — and can leave stale handshake files for the next session to sweep up.
 
 A session's lifecycle looks like this:
 
@@ -103,14 +109,14 @@ git-auto → its own LLM → git commit      unit-check.json written → Claude 
 
 Commands/skills available inside a Claude Code session:
 
-| Command                              | Trigger                        | Description                                                                                                                                       |
-| ------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/minimal-git-workflow:configure`    | Manual                         | Create/update `git-auto-config.json`                                                                                                              |
-| `/minimal-git-workflow:clean-slate`  | Auto (SessionStart) or manual  | Detect unpushed commits and choose to push, squash, or leave as-is before continuing                                                              |
-| `/minimal-git-workflow:unit-commit`  | Auto (watch-pending) or manual | Evaluate whether uncommitted changes form a complete logical unit; commit if so                                                                   |
-| `/minimal-git-workflow:commit`       | Manual only                    | Generate a commit message from a simulated pending-commit handshake (not driven by the real git-auto daemon — see [plugin-working.md](plugin-working.md)) |
-| `/minimal-git-workflow:status`       | Manual                         | Show git-auto process state and handshake file status                                                                                             |
-| `/minimal-git-workflow:wrapup`       | Manual                         | Commit any pending changes and stop git-auto cleanly                                                                                              |
+| Command                             | Trigger                        | Description                                                                                                                                               |
+| ----------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/minimal-git-workflow:configure`   | Manual                         | Create/update `git-auto-config.json`                                                                                                                      |
+| `/minimal-git-workflow:clean-slate` | Auto (SessionStart) or manual  | Detect unpushed commits and choose to push, squash, or leave as-is before continuing                                                                      |
+| `/minimal-git-workflow:unit-commit` | Auto (watch-pending) or manual | Evaluate whether uncommitted changes form a complete logical unit; commit if so                                                                           |
+| `/minimal-git-workflow:commit`      | Manual only                    | Generate a commit message from a simulated pending-commit handshake (not driven by the real git-auto daemon — see [plugin-working.md](plugin-working.md)) |
+| `/minimal-git-workflow:status`      | Manual                         | Show git-auto process state and handshake file status                                                                                                     |
+| `/minimal-git-workflow:wrapup`      | Manual                         | Commit any pending changes and stop git-auto cleanly                                                                                                      |
 
 ## Known Issues / Planned Fixes
 
