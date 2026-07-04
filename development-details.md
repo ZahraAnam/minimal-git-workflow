@@ -182,6 +182,55 @@ This is a good "measure twice" story: the obvious fix for a warning message
 was the exact thing that would have reintroduced a previously-fixed, much
 worse bug.
 
+### The sleep bug: `--force` wasn't the whole fix (PR #9 + #10)
+
+PR #8's `--force` fix (below) turned out to be necessary but **not
+sufficient** — it silenced the interactive confirm blocking the stop signal,
+but a second, independent masking problem meant the signal often did nothing
+even once it was sent.
+
+**Root cause:** bash forces `SIGINT`/`SIGQUIT` to `SIG_IGN` on any `&`
+background job started from a script — a job-control rule, not something
+`nohup` covers (`nohup` only touches `SIGHUP`). `start-git-auto.sh` launched
+git-auto with a plain `nohup ... &`, so the daemon inherited that ignore-mask
+straight through `exec`. `git-auto stop`'s `os.kill(pid, SIGINT)` became a
+structural no-op against a `SIG_IGN` process — but the wrapper reported
+success unconditionally, so the daemon just kept running, invisibly, past
+every "successful" wrapup.
+
+**Fix (`debug/fix-wrapup-command`, PR #9, `9f896b1`/`ce16c33`, merged
+2026-06-08):**
+- `start-git-auto.sh`: wrap the launch in a subshell that runs `trap - INT
+  QUIT` before `exec`-ing git-auto, resetting the disposition to default so
+  the daemon can actually receive `SIGINT`/`SIGQUIT` going forward.
+- `stop-git-auto.sh`: capture the daemon's PID from `git-auto-state.json`
+  *before* calling `git-auto stop`, then verify death for real instead of
+  trusting the tool's report. Because the daemon's own signal handler
+  (`observer.stop()` + `observer.join()` + a state-file rewrite) takes a beat
+  to finish, checking immediately would false-positive into an unnecessary
+  escalation — so the check is a `sleep 0.5` polling loop, up to 3s, before
+  concluding the signal didn't land. Only *then* escalate: `SIGTERM` (not
+  maskable by the same job-control rule) with its own grace window, and
+  `SIGKILL` as a last resort if even that doesn't land.
+- Old daemons already running under the un-reset mask (started before this
+  fix) still needed the escalation path — hence keeping both halves of the
+  fix rather than relying on the trap reset alone.
+
+**Gap, then closure (PR #10, `fd9ee5e`, merged 2026-07-03 — same day as this
+entry):** PR #9 shipped with no dedicated regression test, breaking the
+pattern every other fix in this repo follows (`test-clean-slate.sh`,
+`test-handshake.sh`, `test-unpushed-status.sh`, `test-start-git-auto.sh`, …).
+`test-stop-git-auto.sh` closed that gap, driving `stop-git-auto.sh` against
+two real daemon shapes with actual signal delivery (not mocked):
+1. A bare `cmd &` daemon — reproduces the pre-fix `SIG_IGN` masking, asserts
+   the script detects survival and escalates to `SIGTERM`.
+2. The fixed `( trap - INT QUIT; exec ... ) &` shape — asserts a clean exit
+   on the first `SIGINT`, no escalation needed.
+
+Same lesson as the commit-confirmation saga above, in miniature: a fix
+without a regression test is a fix that can still regress silently — this one
+just got caught before that happened, not after.
+
 ### Companion bug found while there: `wrapup` doesn't actually stop git-auto
 
 While investigating the plugin, a second, related issue surfaced: the
@@ -268,7 +317,11 @@ do blindly because:
 | 6 | fix(unit-commit): widen crash-detection window + regenerate stale unit-check.json mid-session | `fix/unit-commit-stale-state-and-config` | merged |
 | 7 | fix(commit): remove confirmation prompt to match unit-commit's auto-run | `fix/commit-skill-no-confirmation-prompt` | merged |
 | 8 | fix(wrapup): pass --force to git-auto stop to avoid silent abort | `fix/wrapup-stop-git-auto-confirm-block` | merged |
+| 9 | Debug/fix wrapup command (reset SIGINT/SIGQUIT trap on launch; verify-and-escalate SIGTERM/SIGKILL on stop) | `debug/fix-wrapup-command` | merged |
+| 10 | test(stop-git-auto): add regression coverage for SIGINT/SIG_IGN escalation | `debug/fix-wrapup-command` | merged |
 
 (Note: PRs #7 and #8 were merged within minutes of opening — the repo has
 auto-merge enabled, which is itself worth a line in a "how we work" post: CI +
-review gates trusted enough to merge on green without a manual click.)
+review gates trusted enough to merge on green without a manual click. PR #9
+merged 2026-06-08 with no test; the gap sat open for nearly a month until PR
+#10 closed it on 2026-07-03 — see "The sleep bug" above.)
