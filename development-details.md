@@ -16,19 +16,30 @@ watches a repo and fires commits on thresholds.
 Two commit pathways run in parallel:
 
 - **Pathway A — threshold-based (git-auto):** file edits accumulate →
-  `files_threshold` reached → git-auto writes `pending-commit.json` → Claude
-  generates a commit message from session context (the "handshake") → git-auto
-  commits.
+  `files_threshold` reached → git-auto commits fully autonomously, generating
+  its own message via its LLM agent (Mistral by default). **Correction (added
+  2026-07-04):** this was originally documented here as a Claude handshake —
+  "git-auto writes `pending-commit.json` → Claude generates a commit message
+  from session context → git-auto commits" — but that's not how the real
+  `git-auto` binary (`automate-git-commands/git-auto/cli.py`) works: it never
+  reads or writes `pending-commit.json`/`commit-message.txt`. Those files, and
+  the `commit` skill/command built around them, exist in this plugin's scripts
+  but are never actually driven by git-auto in normal operation — only
+  `test-handshake.sh` simulates the write, to test the plugin side in
+  isolation. Caught while reviewing `plugin-working.md` against the actual
+  `git-auto` source.
 - **Pathway B — logical-unit-based (unit-commit):** after every Edit/Write tool
   use, `check-unit-complete.sh` fires; if the tree is dirty it writes
   `unit-check.json`; Claude evaluates "did I just finish a self-contained piece
-  of work?" and commits directly if yes.
+  of work?" and commits directly if yes. This is the only pathway where
+  Claude's session-context handshake is real.
 
-Architecture in one line: shell hooks + a Python handshake module
-(`scripts/handshake.py`) write small JSON state files into `.git/`, and
+Architecture in one line: for Pathway B, shell hooks + a Python handshake
+module (`scripts/handshake.py`) write small JSON state files into `.git/`, and
 Claude-side skills/commands read them, generate messages from *session memory*
 (never `git diff`), and write back — keeping the LLM's context budget untouched
-by diff content.
+by diff content. Pathway A doesn't participate in this — it's git-auto's own
+independent, session-blind commit loop.
 
 ---
 
