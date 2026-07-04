@@ -94,6 +94,37 @@ else
 fi
 
 echo ""
+echo "=== Scenario 3: multi-line stat_summary (realistic multi-file diff --stat) isn't truncated ==="
+
+# stat_summary is real `git diff --stat` output, which spans multiple lines
+# for any multi-file change (found reviewing PR #12's watch-pending.sh fix,
+# 2026-07-04) — the positional line-splitting used to silently drop
+# everything after the first line.
+python3 -c "
+import json
+from datetime import datetime
+payload = {
+    'branch': 'feature-x',
+    'files_changed': ['a.py', 'b.py'],
+    'stat_summary': 'a.py | 2 ++\n b.py | 1 +\n LAST_LINE_MARKER 2 files changed, 3 insertions(+)',
+    'timestamp': datetime.now().isoformat(),
+}
+with open('$REPO/.git/pending-commit.json', 'w') as f:
+    json.dump(payload, f, indent=2)
+"
+
+OUTPUT=$(run_watch_for 7)
+
+if echo "$OUTPUT" | grep -q "LAST_LINE_MARKER"; then
+  echo "PASS: multi-line stat_summary preserved through to the notification"
+else
+  echo "FAIL: multi-line stat_summary was truncated before reaching the notification"
+  echo "--- output ---"
+  echo "$OUTPUT"
+  PASS=false
+fi
+
+echo ""
 if $PASS; then
   echo "=== ALL CHECKS PASSED ==="
   exit 0

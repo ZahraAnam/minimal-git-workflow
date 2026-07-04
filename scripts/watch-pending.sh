@@ -20,16 +20,21 @@ while true; do
   # exact same freshness definition /commit's read-pending uses instead of
   # notifying on a file /commit will silently ignore as stale.
   if [ -f "$PENDING" ]; then
-    mapfile -t PARSED < <(cd "$REPO_ROOT" && python3 -c "
+    # CHANGED: stat_summary is real `git diff --stat` output, which spans
+    # multiple lines for any multi-file change — positional array indexing
+    # (mapfile) silently dropped everything after its first line. Timestamp
+    # is always a single line, so split on "first line vs. the rest" instead:
+    # that keeps an arbitrarily multi-line summary intact.
+    PENDING_OUT=$(cd "$REPO_ROOT" && python3 -c "
 import sys
 sys.path.insert(0, '$PLUGIN_ROOT/scripts')
 from handshake import read_pending_commit
 d = read_pending_commit()
 print(d.get('timestamp', '') if d else '')
-print(d.get('stat_summary', 'changes detected') if d else '')
+print(d.get('stat_summary', 'changes detected') if d else '', end='')
 ")
-    PENDING_TS="${PARSED[0]:-}"
-    SUMMARY="${PARSED[1]:-changes detected}"
+    PENDING_TS=$(printf '%s\n' "$PENDING_OUT" | head -n1)
+    SUMMARY=$(printf '%s\n' "$PENDING_OUT" | tail -n +2)
     if [ -n "$PENDING_TS" ]; then
       if [ "$PENDING_TS" != "$NOTIFIED" ]; then
         NOTIFIED="$PENDING_TS"
