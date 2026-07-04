@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # test-start-git-auto.sh
-# Regression test for two start-git-auto.sh bugs found during unit-commit
-# retesting (2026-06-07):
+# Regression test for start-git-auto.sh bugs found during unit-commit
+# retesting (2026-06-07) and wrapup debugging (2026-07-04):
 #
 # 1. STALE unit-check.json BLOCKS ALL FUTURE DETECTION
 #    Any unit-check.json present at SessionStart is orphaned from a prior
@@ -15,7 +15,16 @@
 #    died ~1s later. Asserts: when the launched process exits immediately,
 #    the script reports failure (not false success) and surfaces the log tail.
 #
-# Both scenarios are exercised against a stub `git-auto` on PATH — we don't
+# 3. STALE pending-commit.json MISLEADS wrapup/commit INTO FABRICATING A
+#    COMMIT MESSAGE
+#    pending-commit.json is only ever written by test-handshake.sh (git-auto
+#    never writes it in real operation — see plugin-working.md), and
+#    test-handshake.sh's --dry-run / timeout paths never clean it up. Any
+#    copy present at SessionStart is therefore orphaned, exactly like
+#    unit-check.json above. Asserts: it's surfaced via a
+#    STALE_PENDING_COMMIT marker and removed.
+#
+# All scenarios are exercised against a stub `git-auto` on PATH — we don't
 # need the real binary's behavior, just to control whether it stays alive.
 
 set -euo pipefail
@@ -118,6 +127,41 @@ else
   echo "PASS: no false 'started' message printed"
 fi
 
+rm -f "$REPO/.git/git-auto-state.json" "$REPO/.git/git-auto.log"
+
+echo ""
+echo "=== Scenario 3: stale pending-commit.json is surfaced and swept ==="
+
+cat > "$REPO/.git/pending-commit.json" <<'EOF'
+{
+  "branch": "feature-x",
+  "files_changed": ["src/example.py", "tests/test_example.py"],
+  "stat_summary": "2 files changed, 10 insertions(+), 2 deletions(-)",
+  "timestamp": "2026-06-01T10:00:00"
+}
+EOF
+
+OUTPUT=$(cd "$REPO" && run_with_stub 'sleep 30 &
+disown
+exit 0')
+
+if echo "$OUTPUT" | grep -q "STALE_PENDING_COMMIT:.*feature-x\|STALE_PENDING_COMMIT:.*src/example.py"; then
+  echo "PASS: stale pending-commit.json surfaced via STALE_PENDING_COMMIT marker with its contents"
+else
+  echo "FAIL: STALE_PENDING_COMMIT marker missing or didn't carry forward stale info"
+  echo "--- output ---"
+  echo "$OUTPUT"
+  PASS=false
+fi
+
+if [ -f "$REPO/.git/pending-commit.json" ]; then
+  echo "FAIL: pending-commit.json still present after sweep"
+  PASS=false
+else
+  echo "PASS: orphaned pending-commit.json removed"
+fi
+
+pkill -f "sleep 30" 2>/dev/null || true
 rm -f "$REPO/.git/git-auto-state.json" "$REPO/.git/git-auto.log"
 
 echo ""

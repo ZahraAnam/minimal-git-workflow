@@ -37,6 +37,26 @@ except Exception:
   rm -f "$UNIT_CHECK"
 fi
 
+# Same orphan logic for pending-commit.json. Unlike unit-check.json, git-auto
+# never writes this file in real operation (see plugin-working.md) — only
+# test-handshake.sh does, to simulate the handshake in isolation, and its
+# --dry-run/timeout paths deliberately skip cleanup. So any copy present at
+# SessionStart is leftover test data, not a real pending commit, and left
+# alone it misleads wrapup/commit into fabricating a commit message from it.
+PENDING_COMMIT="$REPO_ROOT/.git/pending-commit.json"
+if [ -f "$PENDING_COMMIT" ]; then
+  STALE_INFO=$(python3 -c "
+import json
+try:
+    d = json.load(open('$PENDING_COMMIT'))
+    print(f\"{d.get('timestamp', 'unknown time')} | {d.get('stat_summary', 'changes detected')} | files: {', '.join(d.get('files_changed', []))}\")
+except Exception:
+    print('unreadable snapshot')
+" 2>/dev/null)
+  echo "[minimal-git-workflow] STALE_PENDING_COMMIT: orphaned handshake file from a previous session/test ($STALE_INFO) — never a real pending commit. Clearing it." >&2
+  rm -f "$PENDING_COMMIT"
+fi
+
 # Guard: git-auto must be installed
 if ! command -v git-auto &>/dev/null; then
   echo "[minimal-git-workflow] git-auto not found on PATH." >&2
