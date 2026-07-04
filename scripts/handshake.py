@@ -41,6 +41,17 @@ def commit_message_path() -> Path:
     return get_git_dir() / "commit-message.txt"
 
 
+# git-auto never writes pending-commit.json in real operation (see
+# plugin-working.md) — only test-handshake.sh does, to simulate the handshake
+# in isolation, and its --dry-run/timeout paths deliberately skip cleanup.
+# start-git-auto.sh sweeps any copy left over at SessionStart, but one written
+# mid-session and then abandoned survives past that sweep for the rest of the
+# session — so read_pending_commit() applies the same TTL
+# check-unit-complete.sh already uses for unit-check.json, instead of trusting
+# mere existence.
+PENDING_COMMIT_STALE_AFTER_SECONDS = 300
+
+
 def write_pending_commit(
     branch: str,
     files_changed: list[str],
@@ -60,15 +71,41 @@ def write_pending_commit(
 
 
 def read_pending_commit() -> dict | None:
-    """Read pending-commit.json. Returns None if not found."""
+    """Read pending-commit.json. Returns None if not found or stale.
+
+    A copy older than PENDING_COMMIT_STALE_AFTER_SECONDS is orphaned test data
+    (see the comment above that constant) rather than a real pending commit —
+    surface it via a STALE_PENDING_COMMIT marker and clear it instead of
+    letting wrapup/commit act on it.
+    """
     path = pending_commit_path()
     if not path.exists():
         return None
     try:
-        return json.loads(path.read_text())
+        data = json.loads(path.read_text())
     except Exception as e:
         print(f"[handshake] Error reading pending-commit.json: {e}", file=sys.stderr)
         return None
+
+    try:
+        age = time.time() - datetime.fromisoformat(data["timestamp"]).timestamp()
+    except Exception:
+        age = None
+
+    if age is None or age >= PENDING_COMMIT_STALE_AFTER_SECONDS:
+        stat_summary = data.get("stat_summary", "changes detected")
+        files = ", ".join(data.get("files_changed", []))
+        timestamp = data.get("timestamp", "unknown time")
+        print(
+            f"[handshake] STALE_PENDING_COMMIT: orphaned handshake file "
+            f"({timestamp} | {stat_summary} | files: {files}) — never a real "
+            "pending commit. Clearing it.",
+            file=sys.stderr,
+        )
+        path.unlink()
+        return None
+
+    return data
 
 
 def write_commit_message(message: str) -> Path:

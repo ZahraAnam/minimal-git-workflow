@@ -268,6 +268,50 @@ do blindly because:
   to the user *before* Step 3 runs `stop-git-auto.sh`, making the daemon's own
   confirm pure redundancy that can never be answered in this context anyway
 
+### Stale `pending-commit.json` fabricates a phantom commit (found 2026-07-04)
+
+Re-debugging `wrapup` from scratch (branch `debug/fix-wrapup-command`, a second
+pass) turned up a live, currently-reproducing bug distinct from the sleep bug
+above — found by actually running the flow, not by reading it (recurring theme
+#4 below, again).
+
+**Symptom:** `handshake.py status` reported `pending-commit.json : EXISTS` in
+this very repo, with a `stat_summary`/`files_changed` referencing
+`src/example.py`/`tests/test_example.py` — files that don't exist anywhere in
+this project. `wrapup.md` Step 1 trusts that "EXISTS" signal unconditionally:
+"If a pending commit exists, generate and write the commit message first" —
+which would have made Claude fabricate a commit message about phantom files
+using stale data + session context (`commands/commit.md` Step 2 explicitly
+forbids checking `git diff`, by design, so nothing would have caught the
+mismatch).
+
+**Root cause:** per `plugin-working.md`, git-auto never actually writes
+`pending-commit.json` in real operation — only `test-handshake.sh` does, to
+simulate the handshake in isolation. Its `--dry-run` mode (and its timeout
+path) deliberately skip the cleanup that only runs on the success branch, so a
+manual test run left a fake payload sitting in `.git/` from the previous day's
+`docs/development-details` session, with nothing to ever clear it.
+`handshake.py`'s `read_pending_commit()` had no staleness check at all — pure
+existence check — unlike its sibling `unit-check.json`, which got exactly this
+class of fix in PR #5/#6 (SessionStart sweep + mid-session TTL). The fix was
+simply never mirrored to the other handshake file.
+
+**Fix (branch `debug/fix-wrapup-command`, second pass):**
+- `start-git-auto.sh`: sweep any `pending-commit.json` present at
+  SessionStart, surfaced via a `STALE_PENDING_COMMIT` marker before deleting —
+  same shape as the existing `STALE_UNIT_CHECK` sweep just above it.
+- `handshake.py`'s `read_pending_commit()`: apply a 300s TTL (matching
+  `check-unit-complete.sh`'s existing constant for `unit-check.json`) so a
+  file written mid-session and abandoned doesn't survive past the
+  SessionStart sweep for the rest of the session. This one function backs
+  both `commit`'s `read-pending` and `wrapup`'s `status`, so fixing it there
+  covers both entry points without touching either `.md` file.
+- New regression test `test-handshake-staleness.sh` (stale-is-cleared,
+  fresh-is-honored) plus a third scenario added to `test-start-git-auto.sh`
+  for the SessionStart sweep — following this repo's own rule that a fix
+  without a test is a fix that can regress silently (see the sleep-bug gap,
+  PR #9 → #10, above).
+
 ---
 
 ## Recurring themes worth their own blog sections
