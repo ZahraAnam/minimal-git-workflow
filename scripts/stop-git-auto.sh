@@ -28,12 +28,43 @@ rm -f "$REPO_ROOT/.git/unit-check.json"
 STATE_FILE="$REPO_ROOT/.git/git-auto-state.json"
 PRIOR_PID=""
 if [ -f "$STATE_FILE" ]; then
+  # CHANGED: a racing writer (e.g. an orphaned prior daemon instance
+  # overlapping a newly started one — see automate-git-commands commit
+  # b0a6b42) can leave this file as a complete, valid JSON object followed
+  # by a stale trailing fragment from a longer previous write. The old
+  # `except Exception: print('')` treated that unparseable-as-a-whole file
+  # as "no PID", which meant PRIOR_PID came back empty and this script fell
+  # straight to its "wasn't running" branch below — a false negative that
+  # left a live daemon running untouched. Try a lenient parse (recover the
+  # leading valid object) first, and only fall back to a live process-table
+  # lookup (pgrep) if even that fails, instead of silently giving up.
   PRIOR_PID=$(python3 -c "
-import json
+import json, subprocess, sys
+
+path = '$STATE_FILE'
+repo_root = '$REPO_ROOT'
+
+def find_running_pid(repo_path):
+    try:
+        out = subprocess.check_output(
+            ['pgrep', '-f', f'git-auto start --path {repo_path}'],
+            stderr=subprocess.DEVNULL,
+        ).decode('utf-8').strip()
+    except subprocess.CalledProcessError:
+        return None
+    pids = [int(p) for p in out.splitlines() if p.strip()]
+    return pids[0] if pids else None
+
 try:
-    print(json.load(open('$STATE_FILE')).get('pid') or '')
-except Exception:
-    print('')
+    text = open(path).read()
+    try:
+        state = json.loads(text)
+    except json.JSONDecodeError:
+        state, _ = json.JSONDecoder().raw_decode(text)
+    print(state.get('pid') or '')
+except Exception as e:
+    print(f'[minimal-git-workflow] Could not parse state file ({e}); falling back to process check.', file=sys.stderr)
+    print(find_running_pid(repo_root) or '')
 ")
 fi
 

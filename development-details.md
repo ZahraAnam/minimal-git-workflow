@@ -312,6 +312,82 @@ simply never mirrored to the other handshake file.
   without a test is a fix that can regress silently (see the sleep-bug gap,
   PR #9 → #10, above).
 
+### `git-auto-state.json` corruption gives `wrapup` a third false "not
+running" (found 2026-07-04, `plugin-smoke-test` sandbox)
+
+A third, independent way for `wrapup` to falsely report success while the
+daemon keeps running — distinct from both the interactive-confirm bug (PR #8)
+and the phantom-`pending-commit.json` bug above. Found live in the
+`plugin-smoke-test` sandbox: `stop-git-auto.sh` printed "git-auto was not
+running," but `ps` showed the recorded PID very much alive.
+
+**Symptom:** `git-auto stop --force` crashed with `JSONDecodeError: Extra
+data` reading `.git/git-auto-state.json` in `cli.py`'s `stop()`. Reading the
+file directly showed why: a complete, valid JSON object, immediately followed
+by a stale trailing fragment (`...test/test-fixtures/feature-b-partial.txt"
+...}`) — the tail of a longer previous write that a shorter write didn't
+reach.
+
+**Root cause:** every state write in `cli.py` used `Path.write_text(...)`,
+which truncates *within its own* `open()` call — that's fine against a single
+writer, but does nothing to prevent two independent writers racing the same
+path. If daemon A's `open()`+truncate+write interleaves with daemon B's own
+`open()`+truncate+write, whichever write finishes last can be shorter than
+the other, leaving that other write's unreclaimed tail bytes on disk after
+it. Confirmed there really was a second writer: `start()`'s "already running"
+guard (`if pid and _is_running(pid): raise typer.Exit(1)`) sat inside a `try`
+whose `except Exception` also caught the `typer.Exit` it raised —
+`typer.Exit` subclasses `Exception` via `RuntimeError`, so the guard's own
+exit signal was swallowed every time, logged as "Could not restore state,"
+and `start()` fell through to launch a second daemon against the same repo.
+That second daemon is the second writer.
+
+This corruption then broke *two* independent readers of the same file at
+once: `cli.py`'s `stop()`/`status()` (unguarded `json.loads`, crashes
+outright) and `stop-git-auto.sh`'s own defensive `PRIOR_PID` capture (a
+`try/except Exception: print('')` meant to survive exactly this case) — both
+silently produced an empty/no-PID result, so the fallback logic downstream
+had nothing to escalate against and printed the false "not running."
+
+**Fix (branch `fix/adapt-write-paths-to-fix-wrapup`,
+`automate-git-commands` commits `599c52d`, `fcfc374`, `b0a6b42`, `c4ad1ae`):**
+- `git_tools.py`: added `atomic_write_json()` — write to a temp file in the
+  same directory, then `os.replace()` into place. `os.replace` swaps a
+  directory entry to an already-fully-written inode, so no reader (or second
+  writer) can ever observe a partial or interleaved file, regardless of
+  timing. Replaced all 5 `write_text(json.dumps(...))` call sites in
+  `cli.py` (`_save_state`, `start`'s initial write, `start`'s shutdown write,
+  `stop`'s and `status`'s stale-PID cleanups).
+- `git_tools.py`: added `read_json_lenient()` — uses
+  `json.JSONDecoder().raw_decode()` instead of `json.loads()`, so a file with
+  a valid leading object plus a stale tail recovers the real (correct, since
+  it's whichever write finished last) state instead of being discarded.
+  Still raises on genuinely unparseable content (e.g. truncated mid-write).
+  Applied to all 4 read sites.
+- `git_tools.py`: added `find_running_pid()` — `pgrep -f "git-auto start
+  --path <repo>"` fallback, invoked only when even the lenient parse fails.
+  Used in `start()`'s duplicate-daemon guard and in `stop()`/`status()`'s
+  corrupt-file handling, so "can't parse state" no longer defaults to
+  "assume not running."
+- `start()`'s JSON parsing was pulled into its own `try/except
+  json.JSONDecodeError`, separate from the "already running" guard, so the
+  guard's `typer.Exit` can no longer be caught by the parse's own exception
+  handler.
+- `stop-git-auto.sh`: `PRIOR_PID` capture now mirrors the same two-step
+  fallback (lenient parse, then `pgrep`) directly in the plugin wrapper —
+  defense in depth independent of whether the `git-auto` binary installed on
+  a given machine has the corresponding fix yet — and prints a warning to
+  stderr on parse failure instead of silently returning empty.
+- Updated 3 existing tests in `tests/test_cli.py` that mocked `Path
+  .write_text` directly to intercept the written JSON; since writes no
+  longer call that method, they now read the real file back after invoking
+  the command, matching the pattern already used by
+  `test_start_catchup_resets_counters`. Full suite: 204 passed.
+- Manually reproduced the exact corruption byte-pattern from the sandbox
+  and confirmed `read_json_lenient` recovers the correct leading object; the
+  daemon still running after a `stop-git-auto.sh` false-negative was
+  confirmed by `ps` and stopped by sending `SIGINT` to the real PID directly.
+
 ---
 
 ## Recurring themes worth their own blog sections
