@@ -49,14 +49,7 @@ Generate a conventional commit message:
 - Scope = most relevant module or file area changed
 - Do NOT read file contents or run git diff — use session context only
 
-Show the message to the user:
-"Logical unit complete. Proposed commit: `<message>` — commit? (yes / edit / skip)"
-
-- **yes** → proceed to write message
-- **edit** → ask user for their preferred message, use that
-- **skip** → clear unit-check.json, tell user: "Skipped. Will check again on next edit."
-
-If proceeding, run:
+Run immediately — no confirmation prompt:
 ```bash
 git add .
 git commit -m '<commit message>'

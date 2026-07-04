@@ -26,7 +26,7 @@ if push_threshold reached → git push
 
 **git-auto is fully autonomous.** It never asks Claude, never writes `pending-commit.json`, never reads `commit-message.txt`. Those files are unused in normal operation — verified against the real `git-auto` source (`automate-git-commands/git-auto/cli.py`): nothing in the daemon reads or writes either file. Only `test-handshake.sh` simulates writing `pending-commit.json`, to test the plugin's handshake scripts in isolation from git-auto.
 
-**Safety checks before commit:** git-auto refuses to run on `main`/`master` (logs a warning, no commit), and aborts the whole sync — unstaging, no commit — if a secret-looking file is staged.
+**Safety checks before commit:** git-auto refuses to run on `main`/`master` (logs a warning, no commit). Before staging anything, it also scans the working tree for secret-looking files (`git status --porcelain`, not just staged files) and aborts the sync with no commit and nothing staged if any are found — this check runs *before* `git add`, so there's nothing to unstage.
 
 **Flush timer behaviour:** the flush timer doesn't lower the bar, it only resolves syncs that were *deferred* by cooldown. If a file-change event pushes the queued-file count past `files_threshold` while still in cooldown, that sync is silently queued instead of firing immediately; a 1s-interval flush loop fires it as soon as cooldown expires. Below `files_threshold`, nothing flushes on its own. (A separate, opt-in `interval` config key — not shown in the example below — can trigger a sync purely on a time interval regardless of threshold, but that's a distinct feature from the flush timer.)
 
@@ -40,8 +40,8 @@ You edit a file via Claude (Edit/Write tool)
 PostToolUse hook fires: check-unit-complete.sh
         ↓
 Checks: unit_commit: true in git-auto-config.json (top-level key)
+Checks: unit-check.json not already pending (stale ones — past 300s — are cleared and fall through)
 Checks: uncommitted changes exist
-Checks: unit-check.json not already pending
         ↓
 Writes .git/unit-check.json  (branch, files_changed, stat_summary)
         ↓
@@ -66,7 +66,7 @@ Claude evaluates: "did I just finish a self-contained piece of work?"
                   if unpushed >= push_threshold → git push
 ```
 
-**Claude commits directly.** No handoff to git-auto, and no user confirmation gate — this used to prompt `yes / edit / skip` before writing; that step was removed (see development-details.md's "commit-confirmation saga") so the plugin never asks twice.
+**Claude commits directly.** No handoff to git-auto, and no user confirmation gate. `skills/unit-commit/SKILL.md` never had one — but its command twin, `commands/unit-commit.md`, still carried a full `yes / edit / skip` prompt until this was caught and fixed (2026-07-04): the same skill/command-drift pattern behind development-details.md's separate "commit-confirmation saga" (which was about the `commit` skill, not this one), recurring here independently.
 
 ---
 

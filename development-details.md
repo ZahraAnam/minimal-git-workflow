@@ -79,7 +79,7 @@ duplication (each skill has a near-identical command wrapper) becomes a
 recurring maintenance headache later (see the commit-confirmation saga below)
 because the two copies drift out of sync silently.
 
-### `docs/regression-test-plan` → PR #4 (still open)
+### `docs/regression-test-plan` → PR #4 (merged 2026-07-03)
 A catalog rather than code: which of the 4 `test-*.sh` scripts guard what,
 which flows are manual-only (anything needing `AskUserQuestion` — clean-slate
 triage, `/configure` Step 0, commit-message generation, wrapup), the 4 known
@@ -323,7 +323,7 @@ do blindly because:
 | 1 | feat: detect unpushed commits and offer clean-slate triage | `feat/clean-slate-unpushed-prompt` | merged |
 | 2 | docs(readme): align table column widths | `fix/readme-table-formatting` | merged |
 | 3 | feat(clean-slate): add slash command wrapping the clean-slate skill | `feat/clean-slate-command` | merged |
-| 4 | docs(test-plan): add regression test plan | `docs/regression-test-plan` | open |
+| 4 | docs(test-plan): add regression test plan | `docs/regression-test-plan` | merged |
 | 5 | fix(unit-commit): stale state sweep, daemon crash detection, catchup conflict warning | `fix/unit-commit-stale-state-and-config` | merged |
 | 6 | fix(unit-commit): widen crash-detection window + regenerate stale unit-check.json mid-session | `fix/unit-commit-stale-state-and-config` | merged |
 | 7 | fix(commit): remove confirmation prompt to match unit-commit's auto-run | `fix/commit-skill-no-confirmation-prompt` | merged |
@@ -331,8 +331,9 @@ do blindly because:
 | 9 | Debug/fix wrapup command (reset SIGINT/SIGQUIT trap on launch; verify-and-escalate SIGTERM/SIGKILL on stop) | `debug/fix-wrapup-command` | merged |
 | 10 | test(stop-git-auto): add regression coverage for SIGINT/SIG_IGN escalation | `debug/fix-wrapup-command` | merged |
 
-(Note: PRs #7 and #8 were merged within minutes of opening — the repo has
-auto-merge enabled, which is itself worth a line in a "how we work" post: CI +
-review gates trusted enough to merge on green without a manual click. PR #9
-merged 2026-06-08 with no test; the gap sat open for nearly a month until PR
-#10 closed it on 2026-07-03 — see "The sleep bug" above.)
+(Note: PRs #7 and #8 were merged within minutes of opening — not GitHub
+auto-merge (checked: `allow_auto_merge` is `false` on this repo, and both PRs
+show a human `mergedBy` with no `autoMergeRequest`), just a fast manual
+merge-on-green. PR #9 merged 2026-06-08 with no test; the gap sat open for
+nearly a month until PR #10 closed it on 2026-07-03 — see "The sleep bug"
+above.)
