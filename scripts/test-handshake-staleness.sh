@@ -96,6 +96,47 @@ else
 fi
 
 echo ""
+echo "=== Scenario 3: valid-JSON-but-non-dict payload doesn't crash the CLI ==="
+
+# A payload that parses as valid JSON but isn't an object (e.g. a truncated
+# or otherwise malformed write) used to crash read_pending_commit(): the
+# TypeError from `data["timestamp"]` was caught and treated as "age unknown",
+# but the stale branch immediately called `data.get(...)`, which doesn't
+# exist on a bare string — an uncaught AttributeError killed the whole CLI
+# invocation instead of gracefully treating the file as unreadable.
+echo '"corrupted-string-not-a-dict"' > "$REPO/.git/pending-commit.json"
+
+set +e
+OUTPUT=$(cd "$REPO" && python3 "$HANDSHAKE" status 2>&1)
+STATUS_EXIT=$?
+set -e
+
+if [ "$STATUS_EXIT" -eq 0 ]; then
+  echo "PASS: status did not crash on a non-dict payload"
+else
+  echo "FAIL: status crashed (exit $STATUS_EXIT) on a non-dict payload"
+  echo "--- output ---"
+  echo "$OUTPUT"
+  PASS=false
+fi
+
+if echo "$OUTPUT" | grep -qi "traceback"; then
+  echo "FAIL: unhandled Python exception leaked to output"
+  echo "--- output ---"
+  echo "$OUTPUT"
+  PASS=false
+else
+  echo "PASS: no unhandled exception"
+fi
+
+if echo "$OUTPUT" | grep -q "pending-commit.json : none"; then
+  echo "PASS: non-dict payload treated as unreadable/none"
+else
+  echo "FAIL: non-dict payload not treated as none"
+  PASS=false
+fi
+
+echo ""
 if $PASS; then
   echo "=== ALL CHECKS PASSED ==="
   exit 0

@@ -87,6 +87,17 @@ def read_pending_commit() -> dict | None:
         print(f"[handshake] Error reading pending-commit.json: {e}", file=sys.stderr)
         return None
 
+    # CHANGED: guard against valid-but-non-dict JSON (e.g. a truncated write)
+    # — without this, data["timestamp"]/data.get(...) below would raise on a
+    # bare string/list/number instead of being treated as unreadable.
+    if not isinstance(data, dict):
+        print(
+            f"[handshake] Error reading pending-commit.json: expected a JSON "
+            f"object, got {type(data).__name__}",
+            file=sys.stderr,
+        )
+        return None
+
     try:
         age = time.time() - datetime.fromisoformat(data["timestamp"]).timestamp()
     except Exception:
