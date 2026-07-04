@@ -7,7 +7,7 @@ Claude Code plugin. Automates git commits using Claude's session context — no 
 Two commit pathways run in parallel:
 
 **Pathway A — threshold-based (git-auto)**
-File edits accumulate → `files_threshold` reached → `pending-commit.json` written → Claude generates commit message from session context → git-auto commits.
+File edits accumulate → `files_threshold` reached → git-auto commits fully autonomously, generating its own message via its LLM agent (Mistral by default). No Claude handshake — see [plugin-working.md](plugin-working.md) for the verified current behavior.
 
 **Pathway B — logical-unit-based (unit-commit)**
 After each Edit/Write tool use → `check-unit-complete.sh` fires → if working tree dirty, `unit-check.json` written → Claude evaluates whether a complete logical unit is done → if yes, commits directly.
@@ -57,7 +57,7 @@ the unit-commit pathway gets a chance to evaluate and bundle a logical unit. Set
 | Skill         | Trigger                        | Description                                    |
 | ------------- | ------------------------------ | ---------------------------------------------- |
 | `unit-commit` | Auto (watch-pending) or manual | Evaluate + commit logical unit                 |
-| `commit`      | Auto (watch-pending) or manual | Generate message for git-auto threshold commit |
+| `commit`      | Manual only                    | Generate message from a simulated pending-commit handshake (not driven by the real git-auto daemon — see [plugin-working.md](plugin-working.md)) |
 | `configure`   | Manual                         | Create/update git-auto-config.json             |
 | `status`      | Manual                         | Show git-auto state + handshake status         |
 | `wrapup`      | Manual                         | Commit pending, stop git-auto cleanly          |
