@@ -569,22 +569,36 @@ Trigger Pathway A's threshold (Task 5 Step 2) so `pending-commit.json` exists, t
 Expected: Step 1 detects the pending commit and resolves it first (same steps as `/minimal-git-workflow:commit`) before proceeding to Step 2.
 Verify: `git log -1 --format=%s` reflects the generated message before stop-git-auto runs.
 
-- [ ] **Step 2: Wrapup with uncommitted changes present**
+- [ ] **Step 2: Wrapup with uncommitted changes present — Commit and push now**
 
 ```bash
 cd ~/workdir/repositories/plugin-smoke-test
 echo "uncommitted" >> README.md
 ```
 
-Invoke `/minimal-git-workflow:wrapup`.
-Expected: Step 2 reports "There are uncommitted changes. git-auto stop will warn about these." and lists the short-form file list (no content).
+Invoke `/minimal-git-workflow:wrapup`, choose **Commit and push now** at the Step 2 `AskUserQuestion` prompt.
+Expected: Step 2a generates a conventional commit message from session context (no diff read), runs `git add . && git commit` then `git push`, and reports "Committed: `<message>` — pushed."
+Verify: `git log -1 --format=%s` reflects the generated message, `git status --short` is empty, and the commit is on the remote.
+
+- [ ] **Step 2b: Wrapup with uncommitted changes present — Write a catchup note**
+
+Repeat the dirty-README setup above. Invoke `/minimal-git-workflow:wrapup`, choose **Write a catchup note**.
+Expected: Step 2b writes `.claude/sessions/<group>/<timestamp>_<name>.catchup.md` containing the `git status --short` output plus a session-context summary, and reports "Wrote catchup note to `<path>`. Working tree left uncommitted."
+Verify: the catchup file exists with the expected content; `README.md` is still uncommitted.
+
+Clean up: `git checkout -- README.md` and remove the test catchup file.
+
+- [ ] **Step 2c: Wrapup with uncommitted changes present — Leave as-is**
+
+Repeat the dirty-README setup above. Invoke `/minimal-git-workflow:wrapup`, choose **Leave as-is**.
+Expected: Step 2c takes no git action and reports "Leaving uncommitted changes as-is. git-auto stop will warn about these."
 
 - [ ] **Step 3: Stop and final report**
 
-Continuing from Step 2, confirm:
+Continuing from Step 2c (the only branch that leaves the tree dirty), confirm:
 - Step 3 runs `stop-git-auto.sh` and shows its output
 - Step 4 shows `git log --oneline -3` and `git status --short`
-- Step 5 gives a summary distinguishing "Working tree is clean." vs. "Note: N uncommitted files remain — commit manually if needed." (should be the latter here, matching Step 2's dirty file)
+- Step 5 gives a summary distinguishing "Working tree is clean." vs. "Note: N uncommitted files remain — commit manually if needed." (should be the latter here, matching the dirty file left by 2c)
 
 Clean up: `git checkout -- README.md` or commit it, to return to a clean baseline.
 
