@@ -17,20 +17,20 @@
 
 ## Task Overview
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Provision the scratch repo and local bare remote | ✅ Done |
-| 2 | `/configure` — fresh config, update path, conflict warning | 🟡 Partial (Steps 2–3 done) |
-| 3 | SessionStart hook (`start-git-auto.sh`) — all code paths | ⬜ Not started |
-| 4 | `/clean-slate` — push / squash / leave-as-is / push failure | ⬜ Not started |
-| 5 | Pathway A — threshold-based commit (`/commit`) | ⬜ Not started |
-| 6 | Pathway B — logical-unit commit (`/unit-commit`) | ⬜ Not started |
-| 7 | `/status` | ⬜ Not started |
-| 8 | `/wrapup` | ⬜ Not started |
-| 9 | `stop-git-auto.sh` signal-handling edge case | ⬜ Not started |
-| 10 | Cross-repo isolation check | ⬜ Not started |
-| 11 | Uninstall path | ⬜ Not started |
-| 12 | Cleanup | ⬜ Not started |
+| #   | Task                                                        | Status                      |
+| --- | ----------------------------------------------------------- | --------------------------- |
+| 1   | Provision the scratch repo and local bare remote            | ✅ Done                     |
+| 2   | `/configure` — fresh config, update path, conflict warning  | 🟡 Partial (Steps 2–3 done) |
+| 3   | SessionStart hook (`start-git-auto.sh`) — all code paths    | ⬜ Not started              |
+| 4   | `/clean-slate` — push / squash / leave-as-is / push failure | ⬜ Not started              |
+| 5   | Pathway A — threshold-based commit (`/commit`)              | ⬜ Not started              |
+| 6   | Pathway B — logical-unit commit (`/unit-commit`)            | ⬜ Not started              |
+| 7   | `/status`                                                   | ⬜ Not started              |
+| 8   | `/wrapup`                                                   | ⬜ Not started              |
+| 9   | `stop-git-auto.sh` signal-handling edge case                | ⬜ Not started              |
+| 10  | Cross-repo isolation check                                  | ⬜ Not started              |
+| 11  | Uninstall path                                              | ⬜ Not started              |
+| 12  | Cleanup                                                     | ⬜ Not started              |
 
 ---
 
@@ -75,10 +75,13 @@ git push -q -u origin main
 - [x] **Step 2: Verify clean baseline**
 
 Run:
+
 ```bash
 cd ~/workdir/repositories/plugin-smoke-test && git status --short --branch && git rev-list @{u}..HEAD --count
 ```
+
 Expected:
+
 - `## main...origin/main` with no `[ahead/behind]` suffix
 - count `0`
 
@@ -107,6 +110,7 @@ Verified once already (machine-wide symlink, not session-scoped).
 
 Run (in a terminal, not this session): `cd ~/workdir/repositories/plugin-smoke-test && claude`
 Expected: SessionStart hook fires `start-git-auto.sh`; since no `git-auto-config.json` exists yet, expect stderr:
+
 ```
 [minimal-git-workflow] No git-auto-config file found in .../plugin-smoke-test. Run /minimal-git-workflow:configure to create one.
 ```
@@ -116,6 +120,7 @@ Expected: SessionStart hook fires `start-git-auto.sh`; since no `git-auto-config
 Invoke: `/minimal-git-workflow:configure`
 
 Follow SKILL.md:
+
 - Step 0 (unpushed check — count is 0, proceeds silently)
 - Step 1 (`ls git-auto-config.*` → "No config found")
 - Step 2 (answer with non-default values, e.g. `files_threshold=3`, `push_threshold=2`, `unit_commit=true`, `catchup=false`)
@@ -131,6 +136,7 @@ Expected: valid JSON matching the values entered in Step 2 above.
 
 Invoke: `/minimal-git-workflow:configure` again.
 Expected:
+
 - Step 1 finds the existing file and shows current values
 - It asks "update or keep as-is?"
 - Confirm both branches work: keep as-is leaves the file unchanged; update lands new values via Step 3's write.
@@ -139,6 +145,7 @@ Expected:
 
 Invoke `/minimal-git-workflow:configure` and answer `catchup=true` AND `unit_commit=true`.
 Expected:
+
 - Step 2.5's exact warning text appears before the write, asking to keep both or set `catchup: false`.
 - Choose "set catchup: false" and confirm the written file reflects `catchup: false`.
 
@@ -182,6 +189,7 @@ bash ~/.claude/plugins/minimal-git-workflow/scripts/start-git-auto.sh
 ```
 
 Expected stderr:
+
 1. `Starting git-auto with config: .../git-auto-config.json`
 2. after the 3s liveness check: `git-auto started for .../plugin-smoke-test (PID <pid>)`
 
@@ -191,6 +199,7 @@ Expected stdout: `MONITOR_REQUIRED: Call the Monitor tool with command: bash "..
 
 Run: `cat ~/workdir/repositories/plugin-smoke-test/.git/git-auto-state.json`
 Expected:
+
 - JSON containing `pid` and `path` matching `plugin-smoke-test`'s absolute path
 - `kill -0 <pid>` exits 0
 
@@ -198,6 +207,7 @@ Expected:
 
 Run the same start command again: `bash ~/.claude/plugins/minimal-git-workflow/scripts/start-git-auto.sh`
 Expected:
+
 - stderr: `git-auto already running for this project (PID <same pid>) — skipping.`
 - the same `MONITOR_REQUIRED` line on stdout
 - the PID in `git-auto-state.json` is unchanged (no restart happened)
@@ -217,6 +227,7 @@ bash ~/.claude/plugins/minimal-git-workflow/scripts/start-git-auto.sh
 ```
 
 Expected:
+
 - stderr: `STALE_UNIT_CHECK: orphaned check from a previous session (... ) — never evaluated. Clearing it; ...`
 - `.git/unit-check.json` no longer exists afterward: `test -f ~/workdir/repositories/plugin-smoke-test/.git/unit-check.json` exits 1
 
@@ -236,6 +247,7 @@ bash ~/.claude/plugins/minimal-git-workflow/scripts/start-git-auto.sh
 ```
 
 Expected:
+
 - stderr: `STALE_PENDING_COMMIT: orphaned handshake file from a previous session/test (...) — never a real pending commit. Clearing it.`
 - the file is gone
 
@@ -251,6 +263,7 @@ mv /tmp/git-auto-config.json.bak git-auto-config.json
 ```
 
 Expected:
+
 - stderr: `No git-auto-config file found in .../plugin-smoke-test.` / `Run /minimal-git-workflow:configure to create one.`
 - Exit code 0 (not an error — no daemon started)
 
@@ -265,6 +278,7 @@ cp /tmp/git-auto-config.json.good git-auto-config.json
 ```
 
 Expected:
+
 - exit code `1`
 - stderr shows `git-auto failed to start — it exited immediately. Last log lines:` followed by `tail -n 5` of `.git/git-auto.log` (should show git-auto's own "Unknown config key(s)" error)
 - a hint to check the config or run `git-auto start --path ...` directly
@@ -313,6 +327,7 @@ echo "b" >> README.md && git commit -qam "fix: b"
 
 Invoke `/minimal-git-workflow:clean-slate`.
 Expected:
+
 - `AskUserQuestion` shows branch `main`, upstream `origin/main`, subjects `["fix: b", "feat: a"]` (newest-first) — never diffs.
 - Choose "Push now".
 - `git push` succeeds, confirmation "Pushed 2 commit(s) to origin/main.", and `git rev-list @{u}..HEAD --count` → `0`.
@@ -327,6 +342,7 @@ echo "d" >> README.md && git commit -qam "fix: d"
 
 Invoke `/minimal-git-workflow:clean-slate`, choose "Squash into one".
 Expected:
+
 - `git reset --soft @{u}` runs
 - one new commit is created summarizing "c" and "d" using only the subjects (never `git diff`), then pushed
 - `git log -1 --format=%s` shows the new squashed message
@@ -341,6 +357,7 @@ echo "e" >> README.md && git commit -qam "feat: e"
 
 Invoke `/minimal-git-workflow:clean-slate`, choose "Leave as-is".
 Expected:
+
 - no git operation runs
 - confirm "Leaving 1 unpushed commit(s) as-is."
 - `git rev-list @{u}..HEAD --count` still `1`
@@ -374,6 +391,7 @@ echo "f" >> README.md && git commit -qam "feat: f"
 
 Invoke `/minimal-git-workflow:clean-slate`, choose "Push now".
 Expected:
+
 - `git push` fails (non-fast-forward)
 - the skill surfaces the exact git error text
 - does NOT retry, does NOT force-push
@@ -422,6 +440,7 @@ Expected: `watch-pending.sh` (running under Monitor) emits a notification line: 
 
 Invoke `/minimal-git-workflow:commit`.
 Expected:
+
 - Step 1 reads `pending-commit.json` via `handshake.py read-pending`, returns `branch`/`files_changed`/`stat_summary`/`timestamp`
 - Step 2 generates a conventional commit message using only that JSON + session knowledge (no `git diff`/`git show`)
 - Step 3 writes it via `handshake.py write-message '<msg>'` with no confirmation prompt
@@ -439,6 +458,7 @@ cd ~/workdir/repositories/plugin-smoke-test && git log -1 --format=%s
 ```
 
 Expected:
+
 - matches the written message
 - both `.git/pending-commit.json` / `.git/commit-message.txt` are gone (git-auto clears them after committing)
 
@@ -480,6 +500,7 @@ Restart git-auto (Task 3/9 stop+start) so the new config takes effect.
 
 Have Claude edit a file in `plugin-smoke-test` (e.g. append a line to README.md via the Edit tool — this fires the `PostToolUse` hook for real).
 Expected:
+
 - stderr from `check-unit-complete.sh`: `unit-check.json written (N changed file(s)) — watch-pending.sh will notify Claude.`
 - Monitor output: `UNIT_CHECK: Uncommitted changes detected. Summary: ... Run /minimal-git-workflow:unit-commit to evaluate whether this is a complete logical unit.`
 
@@ -533,6 +554,7 @@ Expected: stderr: `STALE_UNIT_CHECK: orphaned check from earlier in this session
 
 With git-auto running and a clean tree, invoke `/minimal-git-workflow:status`.
 Expected:
+
 - Step 1 shows `git-auto status` output (PID/branch/mode/thresholds)
 - Step 2 shows `pending-commit.json: none`, `commit-message.txt: none`, `unit-check.json: none`
 - Step 4 summary: "git-auto is running. No pending commits."
@@ -541,6 +563,7 @@ Expected:
 
 Trigger Pathway A's threshold (like Task 5 Step 2) but don't run `/minimal-git-workflow:commit` yet, then invoke `/minimal-git-workflow:status`.
 Expected:
+
 - Step 2 shows `pending-commit.json: EXISTS`, with `branch` and `stat_summary` populated
 - Step 4 summary: "git-auto is running. Commit pending — run /minimal-git-workflow:commit"
 
@@ -596,6 +619,7 @@ Expected: Step 2c takes no git action and reports "Leaving uncommitted changes a
 - [ ] **Step 3: Stop and final report**
 
 Continuing from Step 2c (the only branch that leaves the tree dirty), confirm:
+
 - Step 3 runs `stop-git-auto.sh` and shows its output
 - Step 4 shows `git log --oneline -3` and `git status --short`
 - Step 5 gives a summary distinguishing "Working tree is clean." vs. "Note: N uncommitted files remain — commit manually if needed." (should be the latter here, matching the dirty file left by 2c)
@@ -624,6 +648,7 @@ bash ~/.claude/plugins/minimal-git-workflow/scripts/stop-git-auto.sh
 ```
 
 Expected stderr:
+
 1. `Stopping git-auto for .../plugin-smoke-test`
 2. after the grace window: `git-auto stopped for .../plugin-smoke-test (PID <PID_BEFORE> confirmed dead).`
 

@@ -85,7 +85,7 @@ help text points to (`Suggestion: commit with 'git-auto start --catchup'`)
 The problem: `start-git-auto.sh` runs on every `SessionStart` and starts
 `git-auto` with whatever `catchup` value is in `git-auto-config.json`. If a
 prior session ended via wrapup's "Write a catchup note" option — which
-*by design* leaves the tree dirty so the note has something to describe —
+_by design_ leaves the tree dirty so the note has something to describe —
 and `catchup: true` is set, the next session's `SessionStart` hook
 auto-commits exactly those files, under a throwaway message, before the note
 is ever read (and before Issue 1's fix, if implemented, would even get a
@@ -98,7 +98,7 @@ This is the same category of bug already known and documented for
 `README.md:50-53` — the two features "fight over the same dirty tree").
 The wrapup catchup-note interaction is a second, currently-undocumented
 instance of the identical root cause: `catchup: true` unconditionally
-commits on start with no awareness of *why* the tree is dirty.
+commits on start with no awareness of _why_ the tree is dirty.
 
 ### Proposed fix
 
@@ -116,7 +116,7 @@ Two independent, stackable options:
    `*.catchup.md` file's listed paths are still dirty; if so and
    `catchup: true` is set in the config, print a warning marker
    (`CATCHUP_NOTE_AT_RISK: <path>`) so Claude can offer to resolve the note
-   (commit/discard/keep) *before* starting the daemon, rather than letting
+   (commit/discard/keep) _before_ starting the daemon, rather than letting
    the daemon silently absorb it on boot.
 
 Recommend (1) alone first — it's a one-line doc/prompt addition with no new
@@ -126,10 +126,10 @@ mechanism exists to hook into.
 
 ## Summary
 
-| # | Issue | Root cause | Fix effort |
-|---|-------|------------|------------|
-| 1 | Catchup notes never surfaced to next session | No `SessionStart` code path reads `*.catchup.md`; both relevant hooks checked and confirmed silent on it | Medium — new glob + marker in `start-git-auto.sh`, mirroring existing `STALE_*` pattern |
-| 2 | `catchup: true` auto-commits a tree a catchup note was written about | `git-auto start --catchup` unconditionally runs `sync_workflow()` on boot with a generic message, unaware a catchup note exists | Low — Step 2.5 warning text extension (matches existing `unit_commit` precedent); optional follow-up hook check once Issue 1 lands |
+| #   | Issue                                                                | Root cause                                                                                                                      | Fix effort                                                                                                                         |
+| --- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Catchup notes never surfaced to next session                         | No `SessionStart` code path reads `*.catchup.md`; both relevant hooks checked and confirmed silent on it                        | Medium — new glob + marker in `start-git-auto.sh`, mirroring existing `STALE_*` pattern                                            |
+| 2   | `catchup: true` auto-commits a tree a catchup note was written about | `git-auto start --catchup` unconditionally runs `sync_workflow()` on boot with a generic message, unaware a catchup note exists | Low — Step 2.5 warning text extension (matches existing `unit_commit` precedent); optional follow-up hook check once Issue 1 lands |
 
 Neither issue causes data loss (git history is preserved either way), but
 both silently defeat the intent of the "Write a catchup note" wrapup option:
