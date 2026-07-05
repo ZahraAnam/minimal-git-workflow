@@ -85,14 +85,43 @@ except Exception:
 fi
 
 # Check for uncommitted changes
-CHANGED_COUNT=$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+PORCELAIN=$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null)
+CHANGED_COUNT=$(printf '%s\n' "$PORCELAIN" | grep -c . || true)
 
 if [ "$CHANGED_COUNT" -eq 0 ]; then
   exit 0
 fi
 
+# Secrets guard — mirrors git-auto's own pre-commit scan (plugin-working.md:31)
+# in spirit, but Pathway B excludes rather than aborts: since Claude commits
+# with no confirmation gate, a secret-looking file must never be staged, but
+# legitimate work sitting alongside it shouldn't be blocked from committing
+# either. The excluded file(s) stay uncommitted and keep re-surfacing on
+# every future edit until the user deals with them.
+SECRET_FILES=()
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  path="${line:3}"
+  base=$(basename "$path")
+  lower=$(printf '%s' "$base" | tr '[:upper:]' '[:lower:]')
+  case "$lower" in
+    .env|.env.*|*.pem|*.key|*credentials*|*secrets*|id_rsa*|.netrc|.pgpass)
+      SECRET_FILES+=("$path")
+      ;;
+  esac
+done <<< "$PORCELAIN"
+
+if [ "${#SECRET_FILES[@]}" -gt 0 ]; then
+  echo "[minimal-git-workflow] SECRETS_DETECTED: excluding from auto-commit — ${SECRET_FILES[*]}. Left uncommitted; review and commit manually if intended." >&2
+fi
+
+SAFE_COUNT=$((CHANGED_COUNT - ${#SECRET_FILES[@]}))
+if [ "$SAFE_COUNT" -le 0 ]; then
+  exit 0
+fi
+
 # Write unit-check.json via handshake.py — cd into REPO_ROOT first since
 # handshake.py resolves the repo via `git rev-parse --show-toplevel` from cwd.
-(cd "$REPO_ROOT" && python3 "$PLUGIN_ROOT/scripts/handshake.py" write-unit-check) >/dev/null
+(cd "$REPO_ROOT" && python3 "$PLUGIN_ROOT/scripts/handshake.py" write-unit-check "${SECRET_FILES[@]}") >/dev/null
 
-echo "[minimal-git-workflow] unit-check.json written ($CHANGED_COUNT changed file(s)) — watch-pending.sh will notify Claude." >&2
+echo "[minimal-git-workflow] unit-check.json written ($SAFE_COUNT changed file(s)) — watch-pending.sh will notify Claude." >&2

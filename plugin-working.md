@@ -44,8 +44,16 @@ PostToolUse hook fires: check-unit-complete.sh
 Checks: unit_commit: true in git-auto-config.json (top-level key)
 Checks: unit-check.json not already pending (stale ones — past 300s — are cleared and fall through)
 Checks: uncommitted changes exist
+Checks: no secret-looking filename among changed files (.env, *.pem, *.key,
+        *credentials*, *secrets*, id_rsa*, .netrc, .pgpass) — inspired by
+        git-auto's own pre-commit scan, but excludes rather than aborts: any
+        match is left out of unit-check.json's files_changed and listed
+        under secret_files_excluded instead (SECRETS_DETECTED marker); the
+        rest of the dirty tree still triggers normally. If nothing safe is
+        left after excluding secrets, no unit-check.json is written at all.
         ↓
-Writes .git/unit-check.json  (branch, files_changed, stat_summary)
+Writes .git/unit-check.json  (branch, files_changed, stat_summary,
+        secret_files_excluded)
         ↓
 watch-pending.sh detects it → notifies Claude session
         ↓
@@ -58,7 +66,7 @@ Claude evaluates: "did I just finish a self-contained piece of work?"
         │
         └── YES → generate commit message from session context
                         ↓
-                  git add .
+                  git add . (excluding any secret_files_excluded paths)
                   git commit -m "<message>"   (no confirmation prompt — runs immediately)
                         ↓
                   clear unit-check.json
