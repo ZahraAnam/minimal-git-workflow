@@ -2,16 +2,16 @@
 
 ## Current Session
 
-- **Name:** catchup
-- **Group:** general
-- **Started:** 2026-07-03 16:31
-- **Aim:** summarize what has been developed so far and where did we leave last time
+- **Name:** check-commit-behaviour-for-unit-commit
+- **Group:** analysis
+- **Started:** 2026-07-05 11:05
+- **Aim:** check commit behaviour for unit commit setting
 
 ---
 
 ## Session Summary Protocol
 
-Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/general/20260703_1631_catchup.summary.md`
+Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/analysis/20260705_1105_check-commit-behaviour-for-unit-commit.summary.md`
 
 Proactively write a summary when you detect:
 - User says: done, finished, goodbye, wrap up, end session
