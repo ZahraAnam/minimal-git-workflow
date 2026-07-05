@@ -30,7 +30,7 @@ New to this plugin? Follow these steps in order:
    /minimal-git-workflow:configure
    ```
 
-   This creates a `git-auto-config.json` in your project root with sensible defaults (see the [Configure](#configure) section below for what each setting does).
+   This walks you through each setting (defaults shown for each) and writes `git-auto-config.json` in your project root (see the [Configure](#configure) section below for what each setting does).
 
 5. **Work normally.** The plugin runs a background daemon and watches your edits — commits happen automatically via one of two pathways (threshold-based or logical-unit-based). No extra action needed while you code.
 
