@@ -2,6 +2,48 @@
 
 Claude Code plugin. Automates git commits using Claude's session context — no raw diffs read into context.
 
+## Quick Start
+
+New to this plugin? Follow these steps in order:
+
+1. **Clone and install.**
+
+   ```bash
+   git clone https://github.com/ZahraAnam/minimal-git-workflow
+   cd minimal-git-workflow
+   ./install.sh
+   ```
+
+   This installs `git-auto` (if not already on `PATH`) and symlinks the plugin into `~/.claude/plugins/minimal-git-workflow/`.
+
+2. **Restart Claude Code** so it picks up the plugin.
+
+3. **Start a session — clean-slate runs automatically.** On `SessionStart`, `/minimal-git-workflow:clean-slate` checks for unpushed commits left over from a previous session and lets you choose to push, squash, or leave them as-is before git-auto starts watching. You can also run it manually anytime:
+
+   ```
+   /minimal-git-workflow:clean-slate
+   ```
+
+4. **Configure the plugin for your project.** Inside a Claude Code session, run:
+
+   ```
+   /minimal-git-workflow:configure
+   ```
+
+   This creates a `git-auto-config.json` in your project root with sensible defaults (see the [Configure](#configure) section below for what each setting does).
+
+5. **Work normally.** The plugin runs a background daemon and watches your edits — commits happen automatically via one of two pathways (threshold-based or logical-unit-based). No extra action needed while you code.
+
+6. **End every session with wrapup.** Run:
+
+   ```
+   /minimal-git-workflow:wrapup
+   ```
+
+   This flushes any pending commit and stops the daemon cleanly. Skipping this step leaves the daemon running orphaned in the background.
+
+See [How it works](#how-it-works) and [Usage](#usage) below for the full details on each pathway and command.
+
 ## How it works
 
 Two commit pathways run in parallel — whichever fires first commits; the other finds nothing to commit:
@@ -57,15 +99,15 @@ Run `/minimal-git-workflow:configure` inside a Claude Code session to create `gi
 
 Key settings:
 
-| Setting            | Default              | Description                                                                      |
-| ------------------ | -------------------- | --------------------------------------------------------------------------------- |
-| `files_threshold`  | 3                    | Files changed before git-auto auto-commits                                        |
-| `push_threshold`   | 0                    | Unpushed commits before auto-push (0 = disabled)                                   |
-| `squash_threshold` | 5                    | Squash unpushed commits into one at this count (0 = disabled, min 4 if enabled)   |
-| `cooldown`         | 5.0                  | Seconds after a commit before another can fire                                     |
-| `unit_commit`      | false                | Enable logical-unit commit pathway (Pathway B)                                     |
-| `catchup`          | false                | Auto-commit whatever is dirty when git-auto starts                                 |
-| `model`            | mistral-small-latest | Fallback model for git-auto's own commit messages                                  |
+| Setting            | Default              | Description                                                                     |
+| ------------------ | -------------------- | ------------------------------------------------------------------------------- |
+| `files_threshold`  | 3                    | Files changed before git-auto auto-commits                                      |
+| `push_threshold`   | 0                    | Unpushed commits before auto-push (0 = disabled)                                |
+| `squash_threshold` | 5                    | Squash unpushed commits into one at this count (0 = disabled, min 4 if enabled) |
+| `cooldown`         | 5.0                  | Seconds after a commit before another can fire                                  |
+| `unit_commit`      | false                | Enable logical-unit commit pathway (Pathway B)                                  |
+| `catchup`          | false                | Auto-commit whatever is dirty when git-auto starts                              |
+| `model`            | mistral-small-latest | Fallback model for git-auto's own commit messages                               |
 
 When `unit_commit: true`, set `files_threshold` high (e.g. 999) to avoid race conditions between the two pathways.
 
