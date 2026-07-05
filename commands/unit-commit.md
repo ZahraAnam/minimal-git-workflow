@@ -82,9 +82,9 @@ If unpushed count >= push_threshold, run:
 git push
 ```
 
-Confirm to the user:
-- Committed and pushed: "Committed and pushed."
-- Committed only: "Committed. (Push disabled or threshold not yet reached.)"
+Notify the user with one line:
+- Committed only: "Committed: `<message>`"
+- Committed and pushed: "Committed: `<message>` — pushed."
 
 ## Step 3b — If NO: dismiss and continue
 
@@ -93,5 +93,4 @@ Clear the unit-check file so the monitor resets:
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" clear-unit-check
 ```
 
-Tell the user: "Not a complete unit yet — continuing. Will check again after next edit."
-No commit is made. The check will re-trigger automatically on the next file modification.
+No message to user. No commit is made. The check will re-trigger automatically on the next file modification.
