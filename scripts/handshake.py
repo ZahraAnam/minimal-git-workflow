@@ -231,13 +231,19 @@ def unit_check_path() -> Path:
     return get_git_dir() / "unit-check.json"
 
 
-def write_unit_check() -> Path:
-    """Write unit-check.json — signals Claude to evaluate whether a logical unit is complete."""
+def write_unit_check(secret_files: list[str] | None = None) -> Path:
+    """Write unit-check.json — signals Claude to evaluate whether a logical unit is complete.
+
+    secret_files: changed files that look like secrets (see check-unit-complete.sh)
+    — Claude must exclude these from `git add` and leave them uncommitted.
+    """
     path = unit_check_path()
+    excluded = secret_files or []
     payload = {
         "branch": get_current_branch(),
-        "files_changed": get_changed_files(),
+        "files_changed": [f for f in get_changed_files() if f not in excluded],
         "stat_summary": get_stat_summary(),
+        "secret_files_excluded": excluded,
         "timestamp": datetime.now().isoformat(),
     }
     path.write_text(json.dumps(payload, indent=2))
@@ -308,7 +314,7 @@ if __name__ == "__main__":
             print("{}")
 
     elif cmd == "write-unit-check":
-        write_unit_check()
+        write_unit_check(secret_files=sys.argv[2:])
 
     elif cmd == "clear-unit-check":
         clear_unit_check()
