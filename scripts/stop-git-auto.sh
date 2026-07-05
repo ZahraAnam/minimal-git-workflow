@@ -16,7 +16,26 @@ echo "[minimal-git-workflow] Stopping git-auto for $REPO_ROOT" >&2
 # Clean up any stale handshake files for this project
 rm -f "$REPO_ROOT/.git/pending-commit.json"
 rm -f "$REPO_ROOT/.git/commit-message.txt"
-rm -f "$REPO_ROOT/.git/unit-check.json"
+
+# Surface unit-check.json's contents before removing it — mirrors
+# start-git-auto.sh's STALE_UNIT_CHECK sweep. Without this, a unit-check.json
+# still pending at wrapup time (dirty tree detected but never evaluated by
+# Claude) was deleted silently, losing the uncommitted-work trail; wrapup's
+# own `git status --short` check still catches the underlying files, but the
+# handshake's own record of them disappeared with no trace.
+UNIT_CHECK="$REPO_ROOT/.git/unit-check.json"
+if [ -f "$UNIT_CHECK" ]; then
+  UNIT_CHECK_INFO=$(python3 -c "
+import json
+try:
+    d = json.load(open('$UNIT_CHECK'))
+    print(f\"{d.get('timestamp', 'unknown time')} | {d.get('stat_summary', 'changes detected')} | files: {', '.join(d.get('files_changed', []))}\")
+except Exception:
+    print('unreadable snapshot')
+" 2>/dev/null)
+  echo "[minimal-git-workflow] UNIT_CHECK: pending check being cleared on stop ($UNIT_CHECK_INFO) — if uncommitted changes remain, review them before ending the session." >&2
+  rm -f "$UNIT_CHECK"
+fi
 
 # Capture the PID before stopping — git-auto stop sends SIGINT, but a daemon
 # launched via `nohup ... &` inherits SIGINT/SIGQUIT forced to SIG_IGN by bash's
