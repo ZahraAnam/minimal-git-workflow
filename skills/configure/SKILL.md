@@ -38,23 +38,23 @@ If a config exists, show the current values and ask: "Would you like to update i
 
 Ask the user for each setting. Show the default and a brief explanation:
 
-1. **files_threshold** (default: 2)
+1. **files_threshold** (default: 3)
    "How many distinct files changed before auto-commit? Lower = more frequent commits."
 
-2. **push_threshold** (default: 4)
+2. **push_threshold** (default: 0)
    "How many commits before auto-push? Set 0 to disable auto-push."
 
-3. **squash_threshold** (default: 0)
+3. **squash_threshold** (default: 5)
    "Squash unpushed commits into one when count reaches N (0 = disabled, min 4 if enabled)."
 
-4. **model** (default: open-mistral-nemo)
-   "Which model for fallback commit messages? (open-mistral-nemo is free tier)"
-   Options: open-mistral-nemo, mistral-small-latest, gpt-4o, claude-3-5-haiku-latest
+4. **model** (default: mistral-small-latest)
+   "Which model for fallback commit messages?"
+   Options: mistral-small-latest, open-mistral-nemo, gpt-4o, claude-3-5-haiku-latest
 
 5. **catchup** (default: false)
    "Commit all pending changes immediately when git-auto starts? (true/false)"
 
-6. **cooldown** (default: 3.0)
+6. **cooldown** (default: 5.0)
    "Seconds to wait after a commit before allowing another. Keep low for frequent commits."
 
 7. **unit_commit** (default: false)
