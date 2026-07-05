@@ -426,6 +426,47 @@ mechanics of all three branches directly rather than the Claude-driven prompt.
 
 ---
 
+## git-auto's idle daemon when `unit_commit: true` (design observation, 2026-07-05)
+
+Raised during the delivery-readiness review: since `skills/unit-commit/SKILL.md`
+already reads `push_threshold` itself and runs `git push` directly after
+committing (`SKILL.md:74-95`), does git-auto's daemon do anything useful at
+all once `unit_commit: true` is set — or could it be skipped entirely?
+
+**Confirmed via code, not just design intent: git-auto is functionally idle
+in this mode, for both commit and push.** Per `plugin-working.md:14-24`,
+Pathway A's squash and push logic only fire *downstream of git-auto making
+its own commit* (threshold reached → commit → then check squash/push). With
+`files_threshold: 999` — the setting README.md:70 explicitly recommends
+whenever `unit_commit: true` — git-auto essentially never commits, so its
+own squash and push never trigger either. The daemon keeps running, watching
+the filesystem, doing nothing.
+
+**Why this is being left as-is rather than fixed:**
+
+1. **Coverage gap if removed.** `check-unit-complete.sh` only fires on
+   `PostToolUse` — i.e. only after *Claude's own* Edit/Write tool calls. It
+   has no visibility into changes made outside Claude (a terminal command,
+   another tool, a background process touching the working tree). git-auto's
+   daemon watches the raw filesystem independently of Claude, so today it's
+   the only thing that would ever catch that class of change. Removing it
+   trades a currently-idle safety net for a real, if narrow, blind spot.
+2. **Nothing is actually wired to skip it yet.** `start-git-auto.sh` launches
+   git-auto unconditionally — it doesn't check `unit_commit` before starting
+   the daemon. So today's idleness is an observation about wasted background
+   process time, not a bug or a half-finished optimization; nothing currently
+   assumes git-auto is (or isn't) running when `unit_commit: true`.
+
+**Verdict:** leave the daemon running. The idle cost is one background
+process per session; the alternative (conditionally skip the `git-auto
+start` call in `start-git-auto.sh` when `unit_commit: true`) would need to
+consciously accept losing the non-Claude-edit safety net first. Worth
+revisiting only if the idle process itself becomes a measured problem
+(resource constrained environments, multiple concurrent sessions, etc.) — not
+worth the coverage trade-off as a speculative optimization today.
+
+---
+
 ## Recurring themes worth their own blog sections
 
 1. **"No raw diffs in context" as a hard architectural constraint.** Every
