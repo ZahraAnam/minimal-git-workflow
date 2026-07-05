@@ -22,6 +22,9 @@ Report:
 - Whether a commit message is pending (pending-commit.json exists)
 - Whether a commit message has already been written (commit-message.txt exists)
 - Branch and stat_summary from pending file if present
+- Whether a Pathway B unit-check is pending (unit-check.json exists) — the
+  output already includes its branch and stat_summary if present; report them
+  so the user knows a logical-unit evaluation hasn't run yet
 
 ## Step 3 — Git state summary
 
@@ -40,4 +43,5 @@ Show:
 Give the user a clear one-line summary:
 - "git-auto is running. No pending commits."
 - "git-auto is running. Commit pending — run /minimal-git-workflow:commit"
+- "git-auto is running. Unit-check pending — run /minimal-git-workflow:unit-commit"
 - "git-auto is not running — run /minimal-git-workflow:configure to set up, or check SessionStart hook."

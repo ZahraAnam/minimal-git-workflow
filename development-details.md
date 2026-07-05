@@ -417,6 +417,42 @@ mechanics of all three branches directly rather than the Claude-driven prompt.
 
 ---
 
+## Wrapup's silent-warn gap (design gap, not a code defect)
+
+Live testing of `/minimal-git-workflow:wrapup` during a full-suite test pass
+surfaced this: when Step 2 found uncommitted changes, it only warned
+("git-auto stop will warn about these") and took no action, leaving
+uncommitted work stranded with no path to resolve it in the same session.
+
+Root-cause investigation (via `superpowers:systematic-debugging`) found this
+wasn't a bug against spec — `skills/wrapup/SKILL.md`, its byte-identical
+twin `commands/wrapup.md`, and the cross-repo test plan's own "Expected" text
+for Task 8 Step 2 all agreed: warn-only was the *documented* behavior. The
+gap was in the design itself, not the implementation.
+
+Fix: Step 2 now uses `AskUserQuestion` with three explicit choices — Commit
+and push now / Commit as WIP (no push) / Leave as-is — mirroring the pattern
+`skills/clean-slate/SKILL.md` already established for the analogous
+unpushed-commits decision, rather than inventing a new mechanism.
+
+The middle option was originally a "write a catchup note" file
+(`.claude/sessions/<group>/<timestamp>_<name>.catchup.md`), but that was
+revised (2026-07-04, same day) after a second pass surfaced two problems
+with it: nothing ever read the note back at the next `SessionStart` (see
+`docs/catchup-note-surfacing-gap-report.md`), and `catchup: true` would
+auto-commit the dirty tree the note described before the note could ever be
+reviewed — the note went stale instantly. Committing locally as `wip:` (no
+push) fixes both for free: `start-git-auto.sh`'s existing `UNPUSHED_COMMITS`
+marker already surfaces it next session with no new scanning code, and
+`catchup: true` only acts on the dirty working tree — a committed-but-unpushed
+WIP commit is invisible to it, so there's nothing left to race.
+
+Since `AskUserQuestion` can't be driven headlessly, `test-wrapup-resolution.sh`
+follows `test-clean-slate.sh`'s precedent: it exercises the underlying git/file
+mechanics of all three branches directly rather than the Claude-driven prompt.
+
+---
+
 ## Recurring themes worth their own blog sections
 
 1. **"No raw diffs in context" as a hard architectural constraint.** Every
@@ -477,6 +513,7 @@ mechanics of all three branches directly rather than the Claude-driven prompt.
 | 8 | fix(wrapup): pass --force to git-auto stop to avoid silent abort | `fix/wrapup-stop-git-auto-confirm-block` | merged |
 | 9 | Debug/fix wrapup command (reset SIGINT/SIGQUIT trap on launch; verify-and-escalate SIGTERM/SIGKILL on stop) | `debug/fix-wrapup-command` | merged |
 | 10 | test(stop-git-auto): add regression coverage for SIGINT/SIG_IGN escalation | `debug/fix-wrapup-command` | merged |
+| 11 | fix(wrapup): replace catchup-note file with a local WIP commit — reuses existing UNPUSHED_COMMITS/clean-slate surfacing, no new race with `catchup: true` | `fix/adapt-for-catchup` | in progress |
 
 (Note: PRs #7 and #8 were merged within minutes of opening — not GitHub
 auto-merge (checked: `allow_auto_merge` is `false` on this repo, and both PRs

@@ -49,11 +49,23 @@ Generate a conventional commit message:
 - Scope = most relevant module or file area changed
 - Do NOT read file contents or run git diff — use session context only
 
-Run immediately — no confirmation prompt:
+If `secret_files_excluded` from Step 1's JSON is non-empty, stage everything
+except those files (they must never be staged or committed):
+```bash
+git add . -- ':(exclude)<path1>' ':(exclude)<path2>'
+```
+Otherwise:
 ```bash
 git add .
+```
+
+Run immediately — no confirmation prompt:
+```bash
 git commit -m '<commit message>'
 ```
+
+If `secret_files_excluded` was non-empty, append to the commit-confirmation
+message: "(left `<path1>`, `<path2>` uncommitted — looked like secrets)".
 
 Then clear the unit-check:
 ```bash
@@ -82,9 +94,9 @@ If unpushed count >= push_threshold, run:
 git push
 ```
 
-Confirm to the user:
-- Committed and pushed: "Committed and pushed."
-- Committed only: "Committed. (Push disabled or threshold not yet reached.)"
+Notify the user with one line:
+- Committed only: "Committed: `<message>`"
+- Committed and pushed: "Committed: `<message>` — pushed."
 
 ## Step 3b — If NO: dismiss and continue
 
@@ -93,5 +105,4 @@ Clear the unit-check file so the monitor resets:
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" clear-unit-check
 ```
 
-Tell the user: "Not a complete unit yet — continuing. Will check again after next edit."
-No commit is made. The check will re-trigger automatically on the next file modification.
+No message to user. No commit is made. The check will re-trigger automatically on the next file modification.

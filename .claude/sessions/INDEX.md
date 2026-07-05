@@ -6,3 +6,5 @@
 | 2026-07-04 13:30 | plans | plan-plugin-testing | Generate a plan to test the plugin | ab52226f-2b3c-45fc-b3de-a3819278c7e8 |  |  |  |
 | 2026-07-04 15:14 | plans | beautify-plan | Beautify plan | b1c10e20-4d29-4138-a8de-2631785369fb |  |  |  |
 | 2026-07-04 17:01 | git-related | prepare-pr | analyse repo and prepare commits and pr | 2ad9423c-d5bc-4cc6-9811-db3b6a095e61 |  |  |  |
+| 2026-07-04 17:26 | debug | fix-catchup-gap | Prepare a fix for catch up gap | 5a1e2696-88f9-4467-b1df-d431cb8a6aff |  |  |  |
+| 2026-07-05 11:05 | analysis | check-commit-behaviour-for-unit-commit | check commit behaviour for unit commit setting | 172b180f-e89b-4c0c-8e3e-57e78351389f |  |  |  |

@@ -44,8 +44,16 @@ PostToolUse hook fires: check-unit-complete.sh
 Checks: unit_commit: true in git-auto-config.json (top-level key)
 Checks: unit-check.json not already pending (stale ones — past 300s — are cleared and fall through)
 Checks: uncommitted changes exist
+Checks: no secret-looking filename among changed files (.env, *.pem, *.key,
+        *credentials*, *secrets*, id_rsa*, .netrc, .pgpass) — inspired by
+        git-auto's own pre-commit scan, but excludes rather than aborts: any
+        match is left out of unit-check.json's files_changed and listed
+        under secret_files_excluded instead (SECRETS_DETECTED marker); the
+        rest of the dirty tree still triggers normally. If nothing safe is
+        left after excluding secrets, no unit-check.json is written at all.
         ↓
-Writes .git/unit-check.json  (branch, files_changed, stat_summary)
+Writes .git/unit-check.json  (branch, files_changed, stat_summary,
+        secret_files_excluded)
         ↓
 watch-pending.sh detects it → notifies Claude session
         ↓
@@ -58,7 +66,7 @@ Claude evaluates: "did I just finish a self-contained piece of work?"
         │
         └── YES → generate commit message from session context
                         ↓
-                  git add .
+                  git add . (excluding any secret_files_excluded paths)
                   git commit -m "<message>"   (no confirmation prompt — runs immediately)
                         ↓
                   clear unit-check.json
@@ -110,12 +118,12 @@ git-auto → Mistral → git commit     unit-check.json written
 ```json
 {
   "start": {
-    "files_threshold": 10,
+    "files_threshold": 999,
     "push_threshold": 0,
-    "squash_threshold": 0,
+    "squash_threshold": 5,
     "catchup": false,
-    "cooldown": 3.0,
-    "model": "open-mistral-nemo"
+    "cooldown": 5.0,
+    "model": "mistral-small-latest"
   },
   "unit_commit": true
 }
@@ -123,6 +131,8 @@ git-auto → Mistral → git commit     unit-check.json written
 
 - `start.*` keys are read by git-auto. Unknown keys cause a startup crash — `unit_commit` must NOT go in `start`.
 - `unit_commit` is a plugin-only key read by `check-unit-complete.sh`. git-auto ignores it.
+- `files_threshold` is set high (999) here specifically because `unit_commit: true` — see README's "avoid race conditions between the two pathways" note. git-auto's own default (unrelated to unit_commit) is 3.
+- `start.*` defaults (from `git-auto/config.py`'s `StartConfig`, the actual source git-auto reads): `files_threshold: 3`, `push_threshold: 0`, `squash_threshold: 5`, `cooldown: 5.0`, `model: "mistral-small-latest"`, `catchup: false`.
 
 ---
 
