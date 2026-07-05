@@ -99,17 +99,22 @@ Run `/minimal-git-workflow:configure` inside a Claude Code session to create `gi
 
 Key settings:
 
-| Setting            | Default              | Description                                                                     |
-| ------------------ | -------------------- | ------------------------------------------------------------------------------- |
-| `files_threshold`  | 3                    | Files changed before git-auto auto-commits                                      |
-| `push_threshold`   | 0                    | Unpushed commits before auto-push (0 = disabled)                                |
-| `squash_threshold` | 5                    | Squash unpushed commits into one at this count (0 = disabled, min 4 if enabled) |
-| `cooldown`         | 5.0                  | Seconds after a commit before another can fire                                  |
-| `unit_commit`      | false                | Enable logical-unit commit pathway (Pathway B)                                  |
-| `catchup`          | false                | Auto-commit whatever is dirty when git-auto starts                              |
-| `model`            | mistral-small-latest | Fallback model for git-auto's own commit messages                               |
+| Setting            | Default                       | Description                                                                     |
+| ------------------ | ----------------------------- | ------------------------------------------------------------------------------- |
+| `files_threshold`  | 3 (15 if `unit_commit: true`) | Files changed before git-auto auto-commits                                      |
+| `push_threshold`   | 0                             | Unpushed commits before auto-push (0 = disabled)                                |
+| `squash_threshold` | 5                             | Squash unpushed commits into one at this count (0 = disabled, min 4 if enabled) |
+| `cooldown`         | 5.0                           | Seconds after a commit before another can fire                                  |
+| `unit_commit`      | true                          | Enable logical-unit commit pathway (Pathway B)                                  |
+| `catchup`          | false                         | Auto-commit whatever is dirty when git-auto starts                              |
+| `model`            | mistral-small-latest          | Fallback model for git-auto's own commit messages                               |
 
-When `unit_commit: true`, set `files_threshold` high (e.g. 999) to avoid race conditions between the two pathways.
+When `unit_commit: true`, `/configure` suggests `files_threshold: 15` and
+enforces a minimum of 10. High enough that git-auto's own autonomous commits
+(Pathway A) don't race Claude's logical-unit commits (Pathway B) mid-unit, but
+low enough to still catch changes made outside Claude within a session —
+unlike a very high sentinel (e.g. 999), which would effectively disable that
+safety net.
 
 Also avoid combining `catchup: true` with `unit_commit: true` — catchup bulk-commits
 all pending changes (with a generic Mistral-generated message) on startup, before

@@ -43,7 +43,7 @@ UNIT_COMMIT_ENABLED=$(python3 -c "
 import json, sys
 try:
     c = json.load(open('$CONFIG_FILE'))
-    print('true' if c.get('unit_commit', False) else 'false')
+    print('true' if c.get('unit_commit', True) else 'false')
 except:
     print('false')
 " 2>/dev/null)

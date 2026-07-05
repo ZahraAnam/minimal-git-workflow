@@ -118,7 +118,7 @@ git-auto → Mistral → git commit     unit-check.json written
 ```json
 {
   "start": {
-    "files_threshold": 999,
+    "files_threshold": 15,
     "push_threshold": 0,
     "squash_threshold": 5,
     "catchup": false,
@@ -130,8 +130,8 @@ git-auto → Mistral → git commit     unit-check.json written
 ```
 
 - `start.*` keys are read by git-auto. Unknown keys cause a startup crash — `unit_commit` must NOT go in `start`.
-- `unit_commit` is a plugin-only key read by `check-unit-complete.sh`. git-auto ignores it.
-- `files_threshold` is set high (999) here specifically because `unit_commit: true` — see README's "avoid race conditions between the two pathways" note. git-auto's own default (unrelated to unit_commit) is 3.
+- `unit_commit` is a plugin-only key read by `check-unit-complete.sh`. git-auto ignores it. A missing `unit_commit` key is treated as `true`.
+- `files_threshold` is set to 15 here specifically because `unit_commit: true` — see README's race-avoidance note on why 15/floor-10 beats a bare high sentinel. `/configure` enforces a minimum of 10 in this mode; git-auto's own unconditioned default is 3.
 - `start.*` defaults (from `git-auto/config.py`'s `StartConfig`, the actual source git-auto reads): `files_threshold: 3`, `push_threshold: 0`, `squash_threshold: 5`, `cooldown: 5.0`, `model: "mistral-small-latest"`, `catchup: false`.
 
 ---

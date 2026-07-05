@@ -37,27 +37,31 @@ If a config exists, show the current values and ask: "Would you like to update i
 
 Ask the user for each setting. Show the default and a brief explanation:
 
-1. **files_threshold** (default: 3)
-   "How many distinct files changed before auto-commit? Lower = more frequent commits."
+1. **unit_commit** (default: true)
+   "Enable logical-unit-based commits? When true, Claude evaluates after each file edit whether a complete logical unit of work has been finished and commits if so — independent of the files_threshold. (true/false)"
 
-2. **push_threshold** (default: 0)
+2. **files_threshold** — depends on the `unit_commit` answer just given:
+   - If `unit_commit: true` (default: 15, minimum 10):
+     "How many distinct files changed before auto-commit? Since unit_commit is on, keep this high enough that git-auto's own autonomous commits (Pathway A) don't race Claude's logical-unit commits (Pathway B) mid-unit — but still low enough to catch changes made outside Claude within a session. Default 15; minimum 10."
+     If the user answers below 10, say: "files_threshold below 10 risks Pathway A firing mid-unit and racing Pathway B's commit — please pick 10 or higher." and re-ask until they give a value of 10 or more.
+   - If `unit_commit: false` (default: 3):
+     "How many distinct files changed before auto-commit? Lower = more frequent commits."
+
+3. **push_threshold** (default: 0)
    "How many commits before auto-push? Set 0 to disable auto-push."
 
-3. **squash_threshold** (default: 5)
+4. **squash_threshold** (default: 5)
    "Squash unpushed commits into one when count reaches N (0 = disabled, min 4 if enabled)."
 
-4. **model** (default: mistral-small-latest)
+5. **model** (default: mistral-small-latest)
    "Which model for fallback commit messages?"
    Options: mistral-small-latest, open-mistral-nemo, gpt-4o, claude-3-5-haiku-latest
 
-5. **catchup** (default: false)
+6. **catchup** (default: false)
    "Commit all pending changes immediately when git-auto starts? (true/false)"
 
-6. **cooldown** (default: 5.0)
+7. **cooldown** (default: 5.0)
    "Seconds to wait after a commit before allowing another. Keep low for frequent commits."
-
-7. **unit_commit** (default: false)
-   "Enable logical-unit-based commits? When true, Claude evaluates after each file edit whether a complete logical unit of work has been finished and commits if so — independent of the files_threshold. (true/false)"
 
 ## Step 2.5 — Warn about catchup + unit_commit conflict
 
