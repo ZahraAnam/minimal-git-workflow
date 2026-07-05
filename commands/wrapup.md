@@ -28,8 +28,9 @@ file list (no content) shown to the user, and these three options:
 
 - **Commit and push now (recommended)** — commits everything with an
   auto-generated message and pushes
-- **Write a catchup note** — leaves the working tree as-is, but saves a note
-  describing what's unfinished so the next session can pick it up
+- **Commit as WIP (no push)** — commits everything locally with a
+  `wip:`-prefixed message describing what's unfinished, but doesn't push, so
+  the next session can find and resume it
 - **Leave as-is** — does nothing, continues with the existing uncommitted
   state
 
@@ -56,29 +57,32 @@ user resolve it manually.
 
 Tell the user: "Committed: `<message>` — pushed."
 
-### Step 2b — Write a catchup note
+### Step 2b — Commit as WIP (no push)
 
-Reuse the same session summary path from the session instructions (same
-directory and timestamp), but swap the `.summary.md` suffix for
-`.catchup.md`, e.g.:
-`.claude/sessions/<group>/<timestamp>_<name>.catchup.md`
+Generate a commit message in the same conventional format as Step 2a, but
+using a `wip` type and a body summarizing what's unfinished:
+- Format: `wip(scope): description`
+- Body: 1-3 sentences from session context — what's done, what's not,
+  what's next
+- Do NOT read file contents or run `git diff` — use session context and the
+  file list from Step 2 only, same invariant as every commit-generating flow
+  in this plugin
 
-Content:
-```markdown
-## Catchup — unfinished at wrapup
-
-<git status --short output>
-
-## What's unfinished
-<1-3 sentences from session context — what's done, what's not, what's next>
+Run immediately — no confirmation prompt, no push:
+```bash
+git add .
+git commit -m '<wip commit message>'
 ```
 
-Do NOT read file contents or run `git diff` for this — same invariant as
-every commit-generating flow in this plugin: summarize from session context
-only.
+This deliberately does NOT push. The next session's `SessionStart` hook
+already surfaces unpushed commits via `UNPUSHED_COMMITS` — no separate
+tracking mechanism needed. Also, `catchup: true` only acts on the dirty
+working tree, so a local, unpushed WIP commit is safe from being swept up
+by it on the next session's start.
 
-Tell the user: "Wrote catchup note to `<path>`. Working tree left
-uncommitted."
+Tell the user: "Committed as WIP: `<message>` — not pushed. It'll be
+flagged by `UNPUSHED_COMMITS` next session; run `/minimal-git-workflow:clean-slate`
+to push, squash, or resume it."
 
 ### Step 2c — Leave as-is
 
