@@ -3,6 +3,27 @@
 Date: 2026-07-04
 Scope: investigation only — no code changed. Proposed fixes below are for review.
 
+## Resolution (2026-07-04, same day)
+
+Neither proposed fix below was implemented. Instead, the underlying
+"catchup note" file mechanism was removed at the source: wrapup's Step 2b
+now commits the dirty tree locally with a `wip:`-prefixed message (no push)
+instead of leaving it dirty and writing a separate `.catchup.md` file. This
+resolves both issues without new scanning/surfacing code:
+
+- **Issue 1** is solved by machinery that already existed —
+  `start-git-auto.sh`'s `UNPUSHED_COMMITS` marker fires on any unpushed
+  commit, and `/minimal-git-workflow:clean-slate` already offers push /
+  squash / leave-as-is triage for it. No `PENDING_CATCHUP` marker or
+  `.git/catchup-notes/` scan needed.
+- **Issue 2** disappears rather than needing a warning: `catchup: true`
+  only acts on the dirty working tree, and a WIP commit leaves nothing
+  dirty — there's nothing left for it to race against.
+
+See `development-details.md`'s "Wrapup's silent-warn gap" section and PR
+log entry #11 for the full account. The rest of this document is kept as
+the original investigation record.
+
 ## Issue 1 — "Write a catchup note" is a write-only mechanism
 
 ### What happens today

@@ -2,16 +2,16 @@
 
 ## Current Session
 
-- **Name:** prepare-pr
+- **Name:** check-diff-with-main
 - **Group:** git-related
-- **Started:** 2026-07-04 17:01
-- **Aim:** analyse repo and prepare commits and pr
+- **Started:** 2026-07-05 12:37
+- **Aim:** check diff with main
 
 ---
 
 ## Session Summary Protocol
 
-Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/git-related/20260704_1701_prepare-pr.summary.md`
+Save summary to: `/home/anam/workdir/repositories/minimal-git-workflow/.claude/sessions/git-related/20260705_1237_check-diff-with-main.summary.md`
 
 Proactively write a summary when you detect:
 - User says: done, finished, goodbye, wrap up, end session

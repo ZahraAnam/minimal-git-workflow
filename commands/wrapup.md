@@ -28,8 +28,6 @@ file list (no content) shown to the user, and these three options:
 
 - **Commit and push now (recommended)** — commits everything with an
   auto-generated message and pushes
-- **Write a catchup note** — leaves the working tree as-is, but saves a note
-  describing what's unfinished so the next session can pick it up
 - **Commit as WIP (no push)** — commits everything locally with a
   `wip:`-prefixed message describing what's unfinished, but doesn't push, so
   the next session can find and resume it
@@ -59,29 +57,6 @@ user resolve it manually.
 
 Tell the user: "Committed: `<message>` — pushed."
 
-### Step 2b — Write a catchup note
-
-Reuse the same session summary path from the session instructions (same
-directory and timestamp), but swap the `.summary.md` suffix for
-`.catchup.md`, e.g.:
-`.claude/sessions/<group>/<timestamp>_<name>.catchup.md`
-
-Content:
-```markdown
-## Catchup — unfinished at wrapup
-
-<git status --short output>
-
-## What's unfinished
-<1-3 sentences from session context — what's done, what's not, what's next>
-```
-
-Do NOT read file contents or run `git diff` for this — same invariant as
-every commit-generating flow in this plugin: summarize from session context
-only.
-
-Tell the user: "Wrote catchup note to `<path>`. Working tree left
-uncommitted."
 ### Step 2b — Commit as WIP (no push)
 
 Generate a commit message in the same conventional format as Step 2a, but

@@ -9,6 +9,7 @@ It can also be run manually at any time to evaluate and commit pending work.
 ## Step 1 — Read unit-check info
 
 Run:
+
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" read-unit-check
 ```
@@ -20,12 +21,14 @@ Stop here.
 ## Step 2 — Evaluate: is this a complete logical unit?
 
 Using ONLY:
+
 - The `stat_summary` and `files_changed` from the JSON above
 - Your own knowledge of what was worked on in this session
 
 Ask yourself: **"Did I just finish a self-contained piece of work?"**
 
 Examples of a complete logical unit:
+
 - Implemented a full feature (function/class/module + its tests)
 - Fixed a bug end-to-end (found root cause, applied fix, verified)
 - Completed a refactor (renamed, restructured, or simplified a component)
@@ -33,6 +36,7 @@ Examples of a complete logical unit:
 - Reached a stable checkpoint mid-task (e.g., "auth flow works, moving to session management")
 
 Examples that are NOT a complete logical unit:
+
 - Half-way through implementing a feature — more edits expected imminently
 - Just added an import or a stub placeholder
 - Mid-refactor with broken state
@@ -43,6 +47,7 @@ Examples that are NOT a complete logical unit:
 ## Step 3a — If YES: generate and commit
 
 Generate a conventional commit message:
+
 - Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, chore, test, perf
 - Subject line max 72 characters
@@ -51,15 +56,19 @@ Generate a conventional commit message:
 
 If `secret_files_excluded` from Step 1's JSON is non-empty, stage everything
 except those files (they must never be staged or committed):
+
 ```bash
 git add . -- ':(exclude)<path1>' ':(exclude)<path2>'
 ```
+
 Otherwise:
+
 ```bash
 git add .
 ```
 
 Run immediately — no confirmation prompt:
+
 ```bash
 git commit -m '<commit message>'
 ```
@@ -68,11 +77,13 @@ If `secret_files_excluded` was non-empty, append to the commit-confirmation
 message: "(left `<path1>`, `<path2>` uncommitted — looked like secrets)".
 
 Then clear the unit-check:
+
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" clear-unit-check
 ```
 
 Then check if push is needed. Read push_threshold from config:
+
 ```bash
 python3 -c "
 import json
@@ -85,22 +96,26 @@ except:
 ```
 
 If push_threshold > 0, count unpushed commits:
+
 ```bash
 git rev-list @{u}..HEAD --count 2>/dev/null || echo 0
 ```
 
 If unpushed count >= push_threshold, run:
+
 ```bash
 git push
 ```
 
 Notify the user with one line:
+
 - Committed only: "Committed: `<message>`"
 - Committed and pushed: "Committed: `<message>` — pushed."
 
 ## Step 3b — If NO: dismiss and continue
 
 Clear the unit-check file so the monitor resets:
+
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" clear-unit-check
 ```

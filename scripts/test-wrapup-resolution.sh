@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # test-wrapup-resolution.sh
 # Regression test for the git/file mechanics behind the wrapup skill's Step 2
-# three actions (commit+push / write catchup note / leave-as-is). The skill's
-# AskUserQuestion can't be driven headlessly, so this test exercises the
-# underlying git and file commands directly and asserts the resulting state.
+# three actions (commit+push / commit as WIP, no push / leave-as-is). The
+# skill's AskUserQuestion can't be driven headlessly, so this test exercises
+# the underlying git and file commands directly and asserts the resulting
+# state.
 
 set -euo pipefail
 
@@ -50,31 +51,25 @@ else
   PASS=false
 fi
 
-# --- Write a catchup note ---
+# --- Commit as WIP (no push) ---
 echo ""
-echo "=== Action: Write a catchup note ==="
-REPO_CATCHUP=$(make_repo "catchup-branch")
-echo "uncommitted" >> "$REPO_CATCHUP/README.md"
+echo "=== Action: Commit as WIP (no push) ==="
+REPO_WIP=$(make_repo "wip-branch")
+echo "uncommitted" >> "$REPO_WIP/README.md"
 
-CATCHUP_DIR="$REPO_CATCHUP/.claude/sessions/debug"
-mkdir -p "$CATCHUP_DIR"
-CATCHUP_FILE="$CATCHUP_DIR/20260704_1546_wrapup-debug.catchup.md"
+git -C "$REPO_WIP" add .
+git -C "$REPO_WIP" commit -q -m "wip(readme): finish edit next session
 
-{
-  echo "## Catchup — unfinished at wrapup"
-  echo ""
-  git -C "$REPO_CATCHUP" status --short
-  echo ""
-  echo "## What's unfinished"
-  echo "README edit in progress, not yet committed."
-} > "$CATCHUP_FILE"
+README edit in progress, not yet complete."
 
-STILL_DIRTY=$(git -C "$REPO_CATCHUP" status --short -- README.md)
+DIRTY_AFTER=$(git -C "$REPO_WIP" status --short)
+SUBJECT=$(git -C "$REPO_WIP" log -1 --format=%s)
+UNPUSHED=$(git -C "$REPO_WIP" rev-list '@{u}..HEAD' --count)
 
-if [ -f "$CATCHUP_FILE" ] && grep -q "README.md" "$CATCHUP_FILE" && [ -n "$STILL_DIRTY" ]; then
-  echo "PASS: catchup note written and working tree left uncommitted"
+if [ -z "$DIRTY_AFTER" ] && [ "$SUBJECT" = "wip(readme): finish edit next session" ] && [ "$UNPUSHED" -eq 1 ]; then
+  echo "PASS: WIP commit clears the working tree and stays unpushed locally"
 else
-  echo "FAIL: expected catchup file with README reference and dirty tree, got file_exists=$([ -f "$CATCHUP_FILE" ] && echo yes || echo no) dirty='$STILL_DIRTY'"
+  echo "FAIL: expected clean tree, wip commit subject, and 1 unpushed commit, got dirty='$DIRTY_AFTER' subject='$SUBJECT' unpushed=$UNPUSHED"
   PASS=false
 fi
 

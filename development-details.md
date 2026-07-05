@@ -404,33 +404,6 @@ for Task 8 Step 2 all agreed: warn-only was the *documented* behavior. The
 gap was in the design itself, not the implementation.
 
 Fix: Step 2 now uses `AskUserQuestion` with three explicit choices — Commit
-and push now / Write a catchup note / Leave as-is — mirroring the pattern
-`skills/clean-slate/SKILL.md` already established for the analogous
-unpushed-commits decision, rather than inventing a new mechanism. The
-catchup-note option reuses the existing session-summary path convention
-(`.claude/sessions/<group>/<timestamp>_<name>.md`) with a `.catchup.md`
-suffix instead of introducing a new naming scheme.
-
-Since `AskUserQuestion` can't be driven headlessly, `test-wrapup-resolution.sh`
-follows `test-clean-slate.sh`'s precedent: it exercises the underlying git/file
-mechanics of all three branches directly rather than the Claude-driven prompt.
-
----
-
-## Wrapup's silent-warn gap (design gap, not a code defect)
-
-Live testing of `/minimal-git-workflow:wrapup` during a full-suite test pass
-surfaced this: when Step 2 found uncommitted changes, it only warned
-("git-auto stop will warn about these") and took no action, leaving
-uncommitted work stranded with no path to resolve it in the same session.
-
-Root-cause investigation (via `superpowers:systematic-debugging`) found this
-wasn't a bug against spec — `skills/wrapup/SKILL.md`, its byte-identical
-twin `commands/wrapup.md`, and the cross-repo test plan's own "Expected" text
-for Task 8 Step 2 all agreed: warn-only was the *documented* behavior. The
-gap was in the design itself, not the implementation.
-
-Fix: Step 2 now uses `AskUserQuestion` with three explicit choices — Commit
 and push now / Commit as WIP (no push) / Leave as-is — mirroring the pattern
 `skills/clean-slate/SKILL.md` already established for the analogous
 unpushed-commits decision, rather than inventing a new mechanism.
