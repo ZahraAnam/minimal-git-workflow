@@ -9,11 +9,13 @@ from its own session context — no raw diff is ever read into context.
 ## Step 1 — Read pending commit info
 
 Run:
+
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" read-pending
 ```
 
 This returns a small JSON object:
+
 ```json
 {
   "branch": "feat/login",
@@ -30,10 +32,12 @@ Stop here.
 ## Step 2 — Generate commit message from session context
 
 Using ONLY:
-- The `stat_summary` and `files_changed` from the JSON above
-- Your own knowledge of what was worked on in this session
 
-Generate a conventional commit message:
+- Your own knowledge of what was worked on in this session
+- The `stat_summary` and `files_changed` from the JSON above
+
+Generate a commit message that clearly addresses WHY of the changes made:
+
 - Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, chore, test, perf
 - Subject line max 72 characters
@@ -45,6 +49,7 @@ Example: `feat(auth): add login validation and session token handling`
 ## Step 3 — Write message for git-auto
 
 Run immediately — no confirmation prompt:
+
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" write-message '<commit message>'
 ```
@@ -52,6 +57,7 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/handshake.py" write-message '<commit mess
 ## Step 4 — Report
 
 After writing, tell the user:
+
 - What message was used
 - That git-auto will now execute the commit
 - Suggest running /minimal-git-workflow:status in a few seconds to confirm
