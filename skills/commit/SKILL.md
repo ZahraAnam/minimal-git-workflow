@@ -36,8 +36,9 @@ Using ONLY:
 - Your own knowledge of what was worked on in this session
 - The `stat_summary` and `files_changed` from the JSON above
 
-Generate a commit message that clearly addresses WHY of the changes made:
+Generate a commit message:
 
+- Addresses: WHY of the changes and WHEN present the tradeoffs of the implementation
 - Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, chore, test, perf
 - Subject line max 72 characters
